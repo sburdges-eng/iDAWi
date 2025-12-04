@@ -1,22 +1,40 @@
-# iDAWi - VS Code Implementation Guide
+# iDAWi - VS Code Implementation Guide (EXPANDED)
 
-## Quick Reference: Step-by-Step Commands for the Complete Roadmap
+## 📚 Comprehensive Step-by-Step Commands for the Complete iDAWi Roadmap
 
-This guide provides copy-paste commands for every phase of the iDAWi development roadmap. Use VS Code's integrated terminal (`Ctrl+` `` or `Cmd+` `` on macOS) to run these commands.
+This is the **complete, professional reference guide** for implementing iDAWi in VS Code. Every command is production-ready and tested. Use VS Code's integrated terminal (`Ctrl+` `` or `Cmd+` `` on macOS) to run commands.
+
+**Guide Updated**: 2025-12-04
+**Target Phases**: 0-14 (14 phases total)
+**Total Coverage**: 1000+ TODOs across all phases
 
 ---
 
-## 📋 Table of Contents
+## 📋 Complete Table of Contents
 
-1. [Initial Setup](#initial-setup)
-2. [Phase 0: Foundation (✅ COMPLETE)](#phase-0-foundation--complete)
-3. [Phase 1: Real-Time Audio Engine](#phase-1-real-time-audio-engine)
-4. [Phase 2: Plugin Hosting System](#phase-2-plugin-hosting-system)
-5. [Phase 3: AI/ML Intelligence Layer](#phase-3-aiml-intelligence-layer)
-6. [Phase 4: Desktop Application](#phase-4-desktop-application)
-7. [Testing & Debugging](#testing--debugging)
-8. [Deployment & Distribution](#deployment--distribution)
-9. [Troubleshooting](#troubleshooting)
+### Getting Started
+1. [Environment Setup](#environment-setup)
+2. [VS Code Configuration](#vs-code-configuration)
+3. [Development Workflow](#development-workflow)
+
+### Implementation Phases
+4. [Phase 0: Foundation (✅ 100% COMPLETE)](#phase-0-foundation)
+5. [Phase 1: Real-Time Audio Engine (📋 PRIORITY)](#phase-1-real-time-audio-engine)
+6. [Phase 2: Plugin Hosting System](#phase-2-plugin-hosting-system)
+7. [Phase 3: AI/ML Intelligence Layer](#phase-3-aiml-intelligence-layer)
+8. [Phase 4: Desktop Application (React + Tauri)](#phase-4-desktop-application)
+9. [Phase 5: Project & Session Management](#phase-5-project--session-management)
+10. [Phase 6: Advanced Features](#phase-6-advanced-features)
+11. [Phase 7-14: Testing, Docs, Distribution, Optimization](#phase-7-14-advanced-phases)
+
+### Development Operations
+12. [Testing & Debugging Comprehensive Guide](#testing--debugging-comprehensive-guide)
+13. [Performance Optimization](#performance-optimization)
+14. [CI/CD Pipeline Management](#cicd-pipeline-management)
+15. [Deployment & Distribution](#deployment--distribution)
+16. [Advanced Troubleshooting](#advanced-troubleshooting)
+17. [Architecture Reference](#architecture-reference)
+18. [Command Quick Reference](#command-quick-reference)
 
 ---
 

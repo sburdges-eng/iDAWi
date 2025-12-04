@@ -1,8 +1,84 @@
 {
+  "version": "2.0.0",
+  "workbench.colorTheme": "Dracula",
+  "workbench.iconTheme": "vscode-icons",
+  "editor.fontSize": 13,
+  "editor.lineHeight": 1.6,
+  "editor.fontLigatures": true,
+  "editor.fontFamily": "'Fira Code', 'Cascadia Code', 'Consolas', monospace",
   "editor.defaultFormatter": "ms-vscode.cpptools",
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.trimAutoWhitespace": true,
+  "editor.autoClosingBrackets": "always",
+  "editor.autoClosingQuotes": "always",
+  "editor.autoSurround": "languageDefined",
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 100,
+  "editor.rulers": [80, 100, 120],
+  "editor.renderWhitespace": "all",
+  "editor.renderControlCharacters": true,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
+  "editor.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.autoSave": "onFocusChange",
+  "files.trimFinalNewlines": true,
+  "files.associations": {
+    "*.h": "cpp",
+    "*.hpp": "cpp",
+    "*.hxx": "cpp",
+    "*.cpp": "cpp",
+    "*.cxx": "cpp",
+    "CMakeLists.txt": "cmake",
+    "*.cmake": "cmake",
+    "*.py": "python",
+    "*.md": "markdown",
+    "Dockerfile*": "dockerfile",
+    "*.json": "json",
+    "*.yaml": "yaml",
+    "*.yml": "yaml"
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/__pycache__/**": true,
+    "**/.*": true,
+    "**/node_modules": true,
+    "**/build": true,
+    "**/.pytest_cache": true,
+    "**/.coverage": true,
+    "**/*.o": true,
+    "**/*.a": true,
+    "**/*.so": true,
+    "**/*.egg-info": true,
+    "**/dist": true,
+    "**/.env": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/node_modules": true,
+    "**/build": true,
+    "**/.pytest_cache": true,
+    "**/.git": true,
+    "**/.*": true,
+    "**/*.o": true,
+    "**/*.a": true
+  },
   "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "[c]": {
     "editor.defaultFormatter": "ms-vscode.cpptools",
     "editor.formatOnSave": true
   },
@@ -10,96 +86,217 @@
     "editor.defaultFormatter": "ms-python.python",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
-    }
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
   },
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[tsx]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[jsx]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.formatOnSave": false,
+    "editor.wordWrapColumn": 100,
+    "editor.tabSize": 2
+  },
+  "[cmake]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[dockerfile]": {
+    "editor.tabSize": 2
+  },
+  "[yaml]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
   },
   "C_Cpp.default.compilerPath": "/usr/bin/g++",
   "C_Cpp.default.cppStandard": "c++20",
   "C_Cpp.default.cStandard": "c17",
+  "C_Cpp.default.intelliSenseEngine": "default",
+  "C_Cpp.intelliSenseEngineFallback": "enabled",
   "C_Cpp.formatting": "clangFormat",
   "C_Cpp.clang_format_style": "Google",
-  "C_Cpp.intelliSenseEngine": "default",
-  "C_Cpp.intelliSenseEngineFallback": "enabled",
+  "C_Cpp.clang_format_fallbackStyle": "Visual Studio",
+  "C_Cpp.vcpkg.enabled": false,
+  "C_Cpp.codeAnalysis.enabled": true,
+  "C_Cpp.codeAnalysis.runCodeAnalysis": "onSave",
+  "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+  "C_Cpp.codeAnalysis.clangTidy.args": [
+    "--checks=-*,readability-*,performance-*,bugprone-*",
+    "--header-filter=.*"
+  ],
   "cmake.autoSelectActiveFolder": true,
   "cmake.buildDirectory": "${workspaceFolder}/penta-core/build",
   "cmake.configureOnOpen": true,
   "cmake.configureSettings": {
-    "CMAKE_BUILD_TYPE": "Debug",
-    "CMAKE_CXX_FLAGS": "-Wall -Wextra -pedantic"
+    "CMAKE_BUILD_TYPE": "Release",
+    "CMAKE_CXX_STANDARD": "20",
+    "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Werror=return-type"
   },
+  "cmake.sourceDirectory": "${workspaceFolder}/penta-core",
+  "cmake.parallelJobs": 0,
+  "cmake.cmakePath": "/usr/bin/cmake",
   "python.defaultInterpreterPath": "${workspaceFolder}/DAiW-Music-Brain/venv/bin/python",
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
   "python.linting.pylintArgs": [
     "--disable=R,C",
-    "--enable=W,E"
+    "--enable=E,F,W",
+    "--fail-under=7"
+  ],
+  "python.linting.mypyEnabled": true,
+  "python.linting.mypyArgs": [
+    "--ignore-missing-imports",
+    "--check-untyped-defs"
   ],
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": [
-    "--line-length=100"
+    "--line-length=100",
+    "--target-version=py39"
   ],
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": [
-    "tests"
+    "tests",
+    "-v",
+    "--tb=short"
   ],
   "python.analysis.typeCheckingMode": "basic",
   "python.analysis.extraPaths": [
-    "${workspaceFolder}/DAiW-Music-Brain"
+    "${workspaceFolder}/DAiW-Music-Brain",
+    "${workspaceFolder}/penta-core/src"
   ],
+  "python.analysis.diagnosticMode": "openFilesOnly",
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+  "prettier.bracketSpacing": true,
+  "prettier.arrowParens": "always",
   "git.ignoreLimitWarning": true,
   "git.useEditorAsCommitEditor": false,
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/build": true,
-    "**/__pycache__": true,
-    "**/.pytest_cache": true,
-    "**/venv": true,
-    "**/*.o": true,
-    "**/*.a": true
-  },
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/*.pyc": true,
-    "**/.pytest_cache": true,
-    "**/venv": true,
-    "**/*.o": true,
-    "**/*.a": true
-  },
-  "files.associations": {
-    "*.h": "cpp",
-    "*.hpp": "cpp",
-    "CMakeLists.txt": "cmake",
-    "*.md": "markdown"
-  },
-  "editor.tabSize": 4,
-  "editor.insertSpaces": true,
-  "editor.trimAutoWhitespace": true,
-  "editor.rulers": [
-    80,
-    100,
-    120
-  ],
-  "editor.wordWrap": "wordWrapColumn",
-  "editor.wordWrapColumn": 100,
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true,
-  "editor.autoClosingBrackets": "always",
-  "editor.autoClosingQuotes": "always",
-  "editor.autoSurround": "languageDefined",
+  "git.autofetch": true,
+  "git.autorefresh": true,
+  "gitlens.hovers.currentLine.enabled": true,
+  "gitlens.hovers.enabled": true,
+  "gitlens.codeLens.enabled": true,
   "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.defaultProfile.osx": "bash",
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.fontSize": 12,
   "terminal.integrated.lineHeight": 1.2,
+  "terminal.integrated.inheritEnv": true,
+  "terminal.integrated.automationProfile.linux": {
+    "path": "/bin/bash",
+    "icon": "terminal-bash"
+  },
+  "terminal.integrated.automationProfile.osx": {
+    "path": "/bin/bash",
+    "icon": "terminal-bash"
+  },
+  "terminal.integrated.automationProfile.windows": {
+    "path": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+    "icon": "terminal-powershell"
+  },
   "extensions.autoUpdate": true,
-  "extensions.ignoreRecommendations": false
+  "extensions.ignoreRecommendations": false,
+  "telemetry.telemetryLevel": "off",
+  "security.workspace.trust.untrustedFiles": "open",
+  "[makefile]": {
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4
+  },
+  "doxdocgen.c.commentPrefix": "   //",
+  "doxdocgen.cpp.commentPrefix": "   //",
+  "doxdocgen.file.fileTemplate": "@file {name}",
+  "doxdocgen.file.copyrightTag": "@copyright",
+  "clang-format.fallbackStyle": "Google",
+  "clang-format.style": "Google",
+  "clang-format.assumeFilename": ".clang-format",
+  "markdownlint.config": {
+    "MD033": false,
+    "MD041": false
+  },
+  "yaml.format.enable": true,
+  "yaml.validation": true,
+  "docker.showDescriptionInTasksExplorer": true,
+  "docker.containers.label": "name",
+  "docker.images.label": "name",
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "shellformat.path": "shfmt",
+  "shellformat.args": ["-i", "4"],
+  "[properties]": {
+    "editor.insertSpaces": false
+  },
+  "workbench.editor.tabSizing": "shrink",
+  "workbench.editor.closeOnFileDelete": true,
+  "workbench.editor.enablePreview": true,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "workbench.startupEditor": "newUntitledFile",
+  "window.autoDetectColorScheme": true,
+  "window.title": "${activeEditorMedium}${separator}${rootName}",
+  "window.openFoldersInNewWindow": "on",
+  "security.promptForLocalFileProtocolHandling": false,
+  "settingsSync.ignoredExtensions": [],
+  "settingsSync.keybindingsPerPlatform": true,
+  "settingsSync.ignoredSettings": [
+    "-python.defaultInterpreterPath"
+  ],
+  "scm.alwaysShowRepositories": true,
+  "explorer.confirmDelete": true,
+  "explorer.confirmDragAndDrop": true,
+  "explorer.sortOrder": "type",
+  "explorer.autoReveal": true,
+  "explorer.openEditors.visible": 0,
+  "outline.showProperties": true,
+  "outline.showMethods": true,
+  "outline.showFields": true,
+  "outline.showVariables": true,
+  "outline.showFunctions": true,
+  "outline.showModules": true,
+  "outline.showClasses": true,
+  "outline.showStructs": true,
+  "outline.showInterfaces": true,
+  "outline.showEnums": true,
+  "problems.showCurrentInStatus": true,
+  "problems.decorations.enabled": true,
+  "problemMatcher.applyFileMatcherOnFolder": true,
+  "debug.showBreakpointLabel": true,
+  "debug.openDebug": "neverOpen",
+  "debug.showInlineBreakpointCandidates": true,
+  "debug.console.fontSize": 12,
+  "debug.console.lineHeight": 1.2,
+  "debug.console.wordWrap": true,
+  "redhat.telemetry.enabled": false,
+  "security.promptForLocalFileProtocolHandling": false,
+  "sourcery.python.version": "3.9",
+  "sourcery.refactor.max_line_length": 100
 }
