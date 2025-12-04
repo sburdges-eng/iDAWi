@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <vector>
+#include <mutex>
 
 namespace penta::osc {
 
@@ -56,10 +58,22 @@ public:
     
 private:
     Config config_;
-    
+
     std::unique_ptr<OSCServer> server_;
     std::unique_ptr<OSCClient> client_;
     std::unique_ptr<RTMessageQueue> messageQueue_;
+
+    // Callback storage for pattern matching
+    struct CallbackEntry {
+        std::string pattern;
+        MessageCallback callback;
+    };
+    std::vector<CallbackEntry> callbacks_;
+    mutable std::mutex callbackMutex_;
+
+    // Internal helpers
+    bool matchPattern(const std::string& pattern, const std::string& address) const;
+    void dispatchMessage(const OSCMessage& message);
 };
 
 } // namespace penta::osc
