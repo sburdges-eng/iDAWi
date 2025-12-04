@@ -1,0 +1,35 @@
+# iDAWi Music Brain - Full Dependencies
+# Core dependencies (required)
+mido>=1.3.0                  # MIDI file I/O
+numpy>=1.24.0                # Numerical operations
+pyyaml>=6.0                  # YAML configuration
+
+# Optional audio analysis (install with: pip install -r requirements.txt[audio])
+librosa>=0.10.0              # Audio analysis
+soundfile>=0.12.0            # Audio file I/O
+
+# Optional music theory (install with: pip install -r requirements.txt[theory])
+music21>=8.0.0               # Advanced music theory
+
+# HTTP/API support
+aiohttp>=3.8.0               # Async HTTP client
+websockets>=11.0             # WebSocket support
+fastapi>=0.100.0             # HTTP API framework
+uvicorn>=0.23.0              # ASGI server
+
+# ML/AI dependencies (optional)
+# torch>=2.0.0               # PyTorch (uncomment if needed)
+# transformers>=4.30.0       # Hugging Face (uncomment if needed)
+
+# Data handling
+pandas>=2.0.0                # Data manipulation
+scipy>=1.10.0                # Scientific computing
+
+# Development dependencies
+pytest>=7.0.0                # Testing
+black>=23.0.0                # Code formatting
+flake8>=6.0.0                # Linting
+mypy>=1.0.0                  # Type checking
+
+# MCP Server dependencies
+mcp>=0.1.0                   # MCP protocol (if available)

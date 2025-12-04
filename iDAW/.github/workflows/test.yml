@@ -1,0 +1,448 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [main, master, develop, 'copilot/**']
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+env:
+  CMAKE_BUILD_TYPE: Release
+  CTEST_OUTPUT_ON_FAILURE: 1
+
+jobs:
+  # ==========================================================================
+  # C++ Unit Tests - Extended Matrix
+  # ==========================================================================
+  cpp-tests:
+    name: C++ Tests (${{ matrix.os }}, ${{ matrix.compiler }})
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        compiler: [default]
+        include:
+          # Ubuntu with GCC
+          - os: ubuntu-latest
+            compiler: gcc-11
+            cc: gcc-11
+            cxx: g++-11
+          # Ubuntu with Clang
+          - os: ubuntu-latest
+            compiler: clang-14
+            cc: clang-14
+            cxx: clang++-14
+          # macOS default (AppleClang)
+          - os: macos-latest
+            compiler: default
+          # Windows MSVC
+          - os: windows-latest
+            compiler: default
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            libasound2-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            lcov
+          
+          # Install specific compiler if requested
+          if [ "${{ matrix.compiler }}" = "gcc-11" ]; then
+            sudo apt-get install -y gcc-11 g++-11
+          elif [ "${{ matrix.compiler }}" = "clang-14" ]; then
+            sudo apt-get install -y clang-14
+          fi
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake ninja lcov
+
+      - name: Install dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install cmake ninja
+
+      - name: Set up compiler environment
+        if: matrix.cc != ''
+        run: |
+          echo "CC=${{ matrix.cc }}" >> $GITHUB_ENV
+          echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} \
+            -DPENTA_BUILD_TESTS=ON \
+            -DPENTA_BUILD_PYTHON_BINDINGS=OFF \
+            -DPENTA_BUILD_JUCE_PLUGIN=OFF \
+            -DPENTA_ENABLE_SIMD=ON
+
+      - name: Build penta_core
+        run: cmake --build build --target penta_core -j
+
+      - name: Build tests
+        run: cmake --build build --target penta_tests -j
+
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure --verbose
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.compiler }}
+          path: |
+            build/Testing/Temporary/LastTest.log
+            build/test-*.xml
+
+  # ==========================================================================
+  # Memory Safety - Valgrind
+  # ==========================================================================
+  valgrind:
+    name: Memory Testing (Valgrind)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            valgrind \
+            libasound2-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev
+
+      - name: Configure CMake (Debug)
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DPENTA_BUILD_TESTS=ON \
+            -DPENTA_BUILD_PYTHON_BINDINGS=OFF \
+            -DPENTA_BUILD_JUCE_PLUGIN=OFF \
+            -DPENTA_ENABLE_SIMD=OFF
+
+      - name: Build tests
+        run: cmake --build build --target penta_tests -j
+
+      - name: Run Valgrind
+        working-directory: build
+        run: |
+          valgrind \
+            --leak-check=full \
+            --show-leak-kinds=all \
+            --track-origins=yes \
+            --verbose \
+            --error-exitcode=1 \
+            --suppressions=../valgrind.supp \
+            --gen-suppressions=all \
+            ./penta_tests 2>&1 | tee valgrind-report.txt
+        continue-on-error: true
+
+      - name: Upload Valgrind report
+        uses: actions/upload-artifact@v4
+        with:
+          name: valgrind-report
+          path: build/valgrind-report.txt
+        if: always()
+
+  # ==========================================================================
+  # Performance Benchmarks
+  # ==========================================================================
+  benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            libasound2-dev \
+            libfreetype6-dev \
+            libx11-dev
+
+      - name: Configure CMake (Release with optimizations)
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DPENTA_BUILD_TESTS=ON \
+            -DPENTA_BUILD_PYTHON_BINDINGS=OFF \
+            -DPENTA_BUILD_JUCE_PLUGIN=OFF \
+            -DPENTA_ENABLE_SIMD=ON \
+            -DCMAKE_CXX_FLAGS="-march=native -O3"
+
+      - name: Build benchmarks
+        run: cmake --build build --target penta_tests -j
+
+      - name: Run performance tests
+        working-directory: build
+        run: |
+          ./penta_tests --gtest_filter="*Performance*:*Benchmark*" --gtest_color=yes 2>&1 | tee benchmark-results.txt
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: build/benchmark-results.txt
+
+  # ==========================================================================
+  # RT-Safety Validation
+  # ==========================================================================
+  rt-safety:
+    name: RT-Safety Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            libasound2-dev \
+            libfreetype6-dev \
+            libx11-dev
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DPENTA_BUILD_TESTS=ON \
+            -DPENTA_BUILD_PYTHON_BINDINGS=OFF \
+            -DPENTA_BUILD_JUCE_PLUGIN=OFF
+
+      - name: Build tests
+        run: cmake --build build --target penta_tests -j
+
+      - name: Run RT-safety tests
+        working-directory: build
+        run: |
+          ./penta_tests --gtest_filter="*RTSafe*" --gtest_color=yes 2>&1 | tee rt-safety-report.txt
+
+      - name: Upload RT-safety report
+        uses: actions/upload-artifact@v4
+        with:
+          name: rt-safety-report
+          path: build/rt-safety-report.txt
+
+  # ==========================================================================
+  # Plugin Integration Tests
+  # ==========================================================================
+  plugin-tests:
+    name: Plugin Integration Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            libasound2-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DPENTA_BUILD_TESTS=ON \
+            -DPENTA_BUILD_PYTHON_BINDINGS=OFF \
+            -DPENTA_BUILD_JUCE_PLUGIN=OFF
+
+      - name: Build tests
+        run: cmake --build build --target penta_tests -j
+
+      - name: Run plugin integration tests
+        working-directory: build
+        run: |
+          ./penta_tests --gtest_filter="*Plugin*:*Integration*" --gtest_color=yes 2>&1 | tee plugin-test-report.txt
+
+      - name: Upload plugin test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-test-report
+          path: build/plugin-test-report.txt
+
+  # ==========================================================================
+  # Coverage Analysis
+  # ==========================================================================
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            lcov \
+            libasound2-dev \
+            libfreetype6-dev \
+            libx11-dev
+
+      - name: Configure CMake (with coverage)
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DPENTA_BUILD_TESTS=ON \
+            -DPENTA_BUILD_PYTHON_BINDINGS=OFF \
+            -DPENTA_BUILD_JUCE_PLUGIN=OFF \
+            -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage"
+
+      - name: Build tests
+        run: cmake --build build --target penta_tests -j
+
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure
+
+      - name: Generate coverage report
+        working-directory: build
+        run: |
+          lcov --capture --directory . --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' '*/tests/*' '*/external/*' --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./build/coverage.info
+          flags: cpp
+          name: cpp-coverage
+        continue-on-error: true
+
+  # ==========================================================================
+  # Python Tests
+  # ==========================================================================
+  python-tests:
+    name: Python Tests (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-benchmark
+          pip install -e .
+
+      - name: Run Python tests
+        run: |
+          pytest tests/ -v --cov=music_brain --cov-report=xml --cov-report=term-missing
+
+      - name: Upload Python coverage
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: python
+          name: python-coverage
+        continue-on-error: true
+
+  # ==========================================================================
+  # Summary Report
+  # ==========================================================================
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [cpp-tests, valgrind, benchmarks, rt-safety, plugin-tests, coverage, python-tests]
+    if: always()
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Generate summary
+        run: |
+          echo "# Test Suite Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- C++ Tests: ${{ needs.cpp-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Valgrind: ${{ needs.valgrind.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Benchmarks: ${{ needs.benchmarks.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- RT-Safety: ${{ needs.rt-safety.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Plugin Tests: ${{ needs.plugin-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage: ${{ needs.coverage.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Python Tests: ${{ needs.python-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "Test reports and logs are available in the workflow artifacts." >> $GITHUB_STEP_SUMMARY

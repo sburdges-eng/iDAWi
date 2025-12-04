@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""
+DAiW Logic Pro CLI Tool
+Generate Logic Pro automation from emotional text.
+"""
+
+import click
+import sys
+from pathlib import Path
+
+# Add parent to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from music_brain.api import MusicBrain
+from music_brain.session.intent_schema import (
+    CompleteSongIntent,
+    SongRoot,
+    SongIntent,
+    TechnicalConstraints
+)
+
+
+@click.group()
+def cli():
+    """DAiW Logic Pro - Emotion to Music Automation"""
+    pass
+
+
+@cli.command()
+@click.argument('emotion_text')
+@click.option('--output', '-o', default='output', help='Output filename base')
+@click.option('--tempo', '-t', type=int, default=None, help='Override tempo (BPM)')
+@click.option('--key', '-k', default=None, help='Override key (e.g., F, Cm)')
+@click.option('--verbose', '-v', is_flag=True, help='Show detailed parameters')
+def generate(emotion_text, output, tempo, key, verbose):
+    """
+    Generate Logic Pro automation from emotional text.
+
+    Example:
+        daiw-logic generate "grief and loss" -o my_sad_song
+        daiw-logic generate "explosive anger" -o angry_track -t 140
+    """
+    click.echo(f"Generating from: \"{emotion_text}\"...")
+
+    brain = MusicBrain()
+    music = brain.generate_from_text(emotion_text)
+
+    # Override parameters if provided
+    if tempo:
+        music.musical_params.tempo_suggested = tempo
+
+    if key:
+        music.musical_params.key_suggested = key
+
+    if verbose:
+        click.echo(f"\nEmotional State:")
+        click.echo(f"   Primary: {music.emotional_state.primary_emotion}")
+        click.echo(f"   Valence: {music.emotional_state.valence:.2f}")
+        click.echo(f"   Arousal: {music.emotional_state.arousal:.2f}")
+
+        click.echo(f"\nMusical Parameters:")
+        click.echo(f"   Tempo: {music.musical_params.tempo_suggested} BPM")
+        click.echo(f"   Key: {music.musical_params.key_suggested}")
+        click.echo(f"   Dissonance: {music.musical_params.dissonance:.1%}")
+        click.echo(f"   Timing: {music.musical_params.timing_feel.value}")
+
+        click.echo(f"\nMixer Preview:")
+        click.echo(f"   Reverb: {music.mixer_params.reverb_mix:.1%}")
+        click.echo(f"   Compression: {music.mixer_params.compression_ratio:.1f}:1")
+        click.echo(f"   Saturation: {music.mixer_params.saturation:.1%}")
+
+    # Export
+    result = brain.export_to_logic(music, output)
+
+    click.echo(f"\nCreated: {result['automation']}")
+    click.echo(f"\nNext: Import to Logic Pro and apply settings")
+
+
+@cli.command()
+@click.argument('intent_file', type=click.Path(exists=True))
+@click.option('--output', '-o', default='output', help='Output filename base')
+def from_intent(intent_file, output):
+    """
+    Generate from a complete intent JSON file.
+
+    Example:
+        daiw-logic from-intent kelly_intent.json -o kelly_song
+    """
+    import json
+
+    click.echo(f"Loading intent from: {intent_file}")
+
+    with open(intent_file) as f:
+        intent_data = json.load(f)
+
+    # Reconstruct intent object
+    intent = CompleteSongIntent.from_dict(intent_data)
+
+    brain = MusicBrain()
+    music = brain.generate_from_intent(intent)
+
+    result = brain.export_to_logic(music, output)
+
+    click.echo(f"Created: {result['automation']}")
+
+
+@cli.command()
+def list_emotions():
+    """List all available emotions from the 216-node thesaurus."""
+    from music_brain.emotion.text_analyzer import TextEmotionAnalyzer
+
+    analyzer = TextEmotionAnalyzer()
+
+    click.echo("\nAVAILABLE EMOTIONS (216 nodes)\n")
+
+    for category, cat_data in analyzer.emotion_data.items():
+        click.echo(f"\n{category.upper()} (valence: {cat_data['valence']})")
+        click.echo("=" * 50)
+
+        for sub_name, sub_data in cat_data.get('sub_emotions', {}).items():
+            click.echo(f"\n  {sub_name} - {sub_data.get('description', '')}")
+
+            for subsub_name, subsub_data in sub_data.get('sub_sub_emotions', {}).items():
+                intensity_words = subsub_data.get('intensity_tiers', {}).get('2_mild', [])
+                click.echo(f"    - {subsub_name}: {', '.join(intensity_words[:3])}")
+
+
+@cli.command()
+@click.argument('text')
+def analyze(text):
+    """
+    Analyze emotional text and show detected emotions.
+
+    Example:
+        daiw-logic analyze "I feel deeply bereaved and heartbroken"
+    """
+    from music_brain.emotion.text_analyzer import TextEmotionAnalyzer
+
+    analyzer = TextEmotionAnalyzer()
+    matches = analyzer.analyze(text)
+
+    click.echo(f"\nAnalyzing: \"{text}\"\n")
+
+    if not matches:
+        click.echo("No emotions detected")
+        return
+
+    click.echo("Detected Emotions:\n")
+    for i, match in enumerate(matches[:5], 1):
+        click.echo(f"{i}. {match.emotion} ({match.category}/{match.sub_emotion})")
+        click.echo(f"   Confidence: {match.confidence:.1%}")
+        click.echo(f"   Keywords: {', '.join(match.keywords_matched)}\n")
+
+    state = analyzer.text_to_emotional_state(text)
+    click.echo(f"Primary Emotion: {state.primary_emotion}")
+    click.echo(f"Valence: {state.valence:.2f} (negative/positive)")
+    click.echo(f"Arousal: {state.arousal:.2f} (low/high energy)")
+
+
+if __name__ == '__main__':
+    cli()

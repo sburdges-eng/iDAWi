@@ -1,0 +1,27 @@
+# AUTONOMOUS AGENT RULES
+
+## PERMISSIONS - AUTO-APPROVE ALL EXCEPT:
+- NEVER delete files you did not create this session
+- NEVER push to main (dev branch only)
+- NEVER rm -rf any directory
+
+## STUCK DETECTION - MANDATORY
+Same error 3x = STOP immediately. Log to STUCK_LOG.md. Move to next task.
+Max 5 attempts per problem. Undoing your own change = STUCK. Log and move on.
+Return to stuck items ONLY after completing other work.
+
+## PRIORITY ORDER
+1. Build-blocking errors → 2. Runtime errors → 3. Type errors → 4. Lint → 5. Improvements
+
+## WORKFLOW
+1. npm install if needed
+2. npm run type-check → fix all
+3. npm run lint → fix all
+4. git add . && git commit -m "fix: [desc] [auto]" after EACH fix
+5. git push origin dev every 10 commits
+6. Final: npm run build, update SESSION_LOG.md, list stuck items
+
+## CODE STANDARDS
+TypeScript: proper types, no any, functional components, Zustand, Tailwind
+Rust: cargo clippy, handle all Results
+Commits: feat/fix/refactor/docs/style/test/chore: description [auto]

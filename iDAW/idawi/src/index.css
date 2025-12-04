@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ableton-style color palette */
+:root {
+  --ableton-bg: #1a1a1a;
+  --ableton-surface: #2a2a2a;
+  --ableton-border: #3a3a3a;
+  --ableton-accent: #ff5500;
+  --ableton-text: #ffffff;
+  --ableton-text-dim: #888888;
+  --ableton-green: #00ff00;
+  --ableton-yellow: #ffff00;
+  --ableton-red: #ff0000;
+
+  /* Emotion colors */
+  --emotion-grief: #4a6fa5;
+  --emotion-joy: #ffd700;
+  --emotion-anger: #dc143c;
+  --emotion-fear: #8b008b;
+  --emotion-love: #ff69b4;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background-color: var(--ableton-bg);
+  color: var(--ableton-text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Tailwind classes */
+@layer components {
+  .bg-ableton-bg {
+    background-color: var(--ableton-bg);
+  }
+
+  .bg-ableton-surface {
+    background-color: var(--ableton-surface);
+  }
+
+  .border-ableton-border {
+    border-color: var(--ableton-border);
+  }
+
+  .text-ableton-text {
+    color: var(--ableton-text);
+  }
+
+  .text-ableton-text-dim {
+    color: var(--ableton-text-dim);
+  }
+
+  .text-ableton-accent {
+    color: var(--ableton-accent);
+  }
+
+  .bg-ableton-accent {
+    background-color: var(--ableton-accent);
+  }
+
+  .bg-ableton-green {
+    background-color: var(--ableton-green);
+  }
+
+  .bg-ableton-yellow {
+    background-color: var(--ableton-yellow);
+  }
+
+  .bg-ableton-red {
+    background-color: var(--ableton-red);
+  }
+
+  /* Emotion colors */
+  .bg-emotion-grief {
+    background-color: var(--emotion-grief);
+  }
+
+  .bg-emotion-joy {
+    background-color: var(--emotion-joy);
+  }
+
+  .bg-emotion-anger {
+    background-color: var(--emotion-anger);
+  }
+
+  .bg-emotion-fear {
+    background-color: var(--emotion-fear);
+  }
+
+  .bg-emotion-love {
+    background-color: var(--emotion-love);
+  }
+
+  /* Buttons */
+  .btn-ableton {
+    @apply px-3 py-2 bg-ableton-surface border border-ableton-border rounded
+           hover:bg-opacity-80 hover:border-ableton-text-dim
+           active:bg-ableton-bg
+           transition-all duration-150
+           text-ableton-text text-sm;
+  }
+
+  .btn-ableton-active {
+    @apply px-3 py-2 bg-ableton-accent border border-ableton-accent rounded
+           hover:bg-opacity-80
+           active:bg-opacity-60
+           transition-all duration-150
+           text-white text-sm;
+  }
+
+  /* Mixer Channel */
+  .mixer-channel {
+    @apply flex flex-col items-center p-3 border-r border-ableton-border min-w-[80px];
+  }
+
+  /* Knob */
+  .knob {
+    @apply relative w-10 h-10 rounded-full bg-ableton-surface border-2 border-ableton-border
+           cursor-pointer select-none
+           hover:border-ableton-text-dim
+           active:border-ableton-accent;
+  }
+
+  .knob-indicator {
+    @apply absolute top-1 left-1/2 w-1 h-3 bg-ableton-accent rounded
+           origin-bottom;
+  }
+
+  /* Vertical Fader */
+  .fader-vertical {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    width: 8px;
+    height: 120px;
+    background: var(--ableton-border);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .fader-vertical::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 10px;
+    background: var(--ableton-text);
+    border-radius: 2px;
+    cursor: grab;
+  }
+
+  .fader-vertical::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    background: var(--ableton-accent);
+  }
+
+  /* Flip container */
+  .flip-container {
+    perspective: 2000px;
+    transform-style: preserve-3d;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ableton-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ableton-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ableton-text-dim);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--ableton-accent);
+  outline-offset: 2px;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--ableton-accent);
+  color: white;
+}
+
+/* Input styling */
+input, select, textarea {
+  background-color: var(--ableton-bg);
+  color: var(--ableton-text);
+  border: 1px solid var(--ableton-border);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--ableton-accent);
+  outline: none;
+}
+
+/* Animation keyframes */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--ableton-accent);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--ableton-accent);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
