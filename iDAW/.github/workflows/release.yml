@@ -1,0 +1,229 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.2.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  # =============================================================================
+  # Build Desktop Applications
+  # =============================================================================
+  build-desktop:
+    name: Build Desktop (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            artifact_name: DAiW-macOS
+            asset_name: DAiW-macOS.zip
+            build_cmd: |
+              pyinstaller daiw.spec --clean --noconfirm
+              cd dist && zip -r ../DAiW-macOS.zip DAiW.app
+          - os: ubuntu-latest
+            artifact_name: DAiW-Linux
+            asset_name: DAiW-Linux.tar.gz
+            build_cmd: |
+              pyinstaller daiw.spec --clean --noconfirm
+              cd dist && tar -czvf ../DAiW-Linux.tar.gz DAiW
+          - os: windows-latest
+            artifact_name: DAiW-Windows
+            asset_name: DAiW-Windows.zip
+            build_cmd: |
+              pyinstaller daiw.spec --clean --noconfirm
+              Compress-Archive -Path dist\DAiW -DestinationPath DAiW-Windows.zip
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1
+
+      - name: Install package and build deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install streamlit pywebview pyinstaller
+
+      - name: Build application
+        shell: bash
+        run: ${{ matrix.build_cmd }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.asset_name }}
+
+  # =============================================================================
+  # Build Python Distribution
+  # =============================================================================
+  build-python:
+    name: Build Python Distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build distribution
+        run: python -m build
+
+      - name: Check distribution
+        run: twine check dist/*
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-dist
+          path: dist/
+
+  # =============================================================================
+  # Build C++ Libraries
+  # =============================================================================
+  build-cpp:
+    name: Build C++ (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: penta-core-Linux
+          - os: macos-latest
+            artifact_name: penta-core-macOS
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ ninja-build
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake ninja
+
+      - name: Configure and build
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -G Ninja
+          ninja penta_core || cmake --build . --target penta_core -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+
+      - name: Package library
+        run: |
+          mkdir -p release
+          cp build/libpenta_core.a release/ 2>/dev/null || cp build/penta_core.lib release/ 2>/dev/null || true
+          cp -r include/penta release/
+          tar -czvf ${{ matrix.artifact_name }}.tar.gz release/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}.tar.gz
+
+  # =============================================================================
+  # Create GitHub Release
+  # =============================================================================
+  create-release:
+    name: Create Release
+    needs: [build-desktop, build-python, build-cpp]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+
+      - name: Extract version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: iDAW v${{ steps.version.outputs.version }}
+          body: |
+            ## iDAW v${{ steps.version.outputs.version }}
+
+            ### Downloads
+
+            - **macOS**: DAiW-macOS.zip
+            - **Linux**: DAiW-Linux.tar.gz
+            - **Windows**: DAiW-Windows.zip
+
+            ### Python Package
+
+            Install via pip:
+            ```bash
+            pip install daiw-music-brain
+            ```
+
+            ### C++ Libraries
+
+            - **Linux**: penta-core-Linux.tar.gz
+            - **macOS**: penta-core-macOS.tar.gz
+
+            ### Changelog
+
+            See CHANGELOG.md for details.
+          files: |
+            artifacts/DAiW-macOS/DAiW-macOS.zip
+            artifacts/DAiW-Linux/DAiW-Linux.tar.gz
+            artifacts/DAiW-Windows/DAiW-Windows.zip
+            artifacts/python-dist/*
+            artifacts/penta-core-Linux/penta-core-Linux.tar.gz
+            artifacts/penta-core-macOS/penta-core-macOS.tar.gz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

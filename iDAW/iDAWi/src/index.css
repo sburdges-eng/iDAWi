@@ -1,0 +1,307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for colors (also defined in Tailwind) */
+:root {
+  --ableton-bg: #1a1a1a;
+  --ableton-surface: #2a2a2a;
+  --ableton-surface-light: #333333;
+  --ableton-border: #3a3a3a;
+  --ableton-text: #e0e0e0;
+  --ableton-text-dim: #999999;
+  --ableton-accent: #ff7e3e;
+  --ableton-green: #00cc00;
+  --ableton-yellow: #ffcc00;
+  --ableton-red: #ff3333;
+
+  /* Emotion colors */
+  --emotion-grief: #4a6fa5;
+  --emotion-joy: #ffd700;
+  --emotion-anger: #dc143c;
+  --emotion-fear: #8b008b;
+  --emotion-love: #ff69b4;
+  --emotion-hope: #34d399;
+  --emotion-melancholy: #6366f1;
+  --emotion-rage: #dc2626;
+}
+
+@layer base {
+  * {
+    @apply border-ableton-border;
+  }
+
+  body {
+    @apply bg-ableton-bg text-ableton-text;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  code {
+    @apply font-mono;
+  }
+
+  /* Disable text selection on UI elements */
+  button, [role="button"], .no-select {
+    user-select: none;
+  }
+}
+
+@layer components {
+  /* Ableton-style buttons */
+  .btn-ableton {
+    @apply px-4 py-2 bg-ableton-surface border border-ableton-border
+           hover:bg-ableton-surface-light transition-colors rounded-sm
+           text-sm font-medium text-ableton-text cursor-pointer
+           active:bg-ableton-border;
+  }
+
+  .btn-ableton-active {
+    @apply bg-ableton-accent border-ableton-accent text-black;
+  }
+
+  .btn-ableton-icon {
+    @apply p-2 bg-ableton-surface border border-ableton-border
+           hover:bg-ableton-surface-light transition-colors rounded-sm
+           cursor-pointer active:bg-ableton-border;
+  }
+
+  /* Timeline track */
+  .track {
+    @apply h-16 bg-ableton-surface border-b border-ableton-border
+           hover:bg-ableton-surface-light transition-colors;
+  }
+
+  .track-selected {
+    @apply bg-ableton-surface-light;
+  }
+
+  /* Mixer channel */
+  .mixer-channel {
+    @apply w-20 bg-ableton-surface border-r border-ableton-border
+           flex flex-col items-center p-2 gap-2;
+  }
+
+  /* VU Meter */
+  .vu-meter {
+    @apply w-3 bg-ableton-bg rounded-sm overflow-hidden;
+  }
+
+  .vu-meter-bar {
+    @apply w-full transition-all duration-75 origin-bottom;
+    background: linear-gradient(to top,
+      theme('colors.ableton.green') 0%,
+      theme('colors.ableton.green') 60%,
+      theme('colors.ableton.yellow') 80%,
+      theme('colors.ableton.red') 100%
+    );
+  }
+
+  /* Knob */
+  .knob {
+    @apply w-10 h-10 rounded-full bg-ableton-bg border-2 border-ableton-border
+           relative cursor-pointer hover:border-ableton-accent transition-colors;
+  }
+
+  .knob-indicator {
+    @apply absolute w-1 h-4 bg-ableton-text rounded-full
+           left-1/2 top-1 transform -translate-x-1/2 origin-bottom;
+  }
+
+  /* Fader */
+  .fader-track {
+    @apply w-2 bg-ableton-bg rounded-full relative;
+  }
+
+  .fader-thumb {
+    @apply w-6 h-3 bg-ableton-surface-light border border-ableton-border
+           rounded-sm absolute left-1/2 transform -translate-x-1/2
+           cursor-grab active:cursor-grabbing hover:bg-ableton-accent
+           hover:border-ableton-accent transition-colors;
+  }
+
+  /* Input fields */
+  .input-ableton {
+    @apply w-full bg-ableton-bg border border-ableton-border rounded-sm
+           px-2 py-1 text-sm text-ableton-text
+           focus:outline-none focus:border-ableton-accent;
+  }
+
+  /* Panels */
+  .panel {
+    @apply bg-ableton-surface border border-ableton-border rounded-sm;
+  }
+
+  .panel-header {
+    @apply px-3 py-2 border-b border-ableton-border text-sm font-medium
+           text-ableton-text-dim uppercase tracking-wider;
+  }
+
+  /* Clip */
+  .clip {
+    @apply absolute top-1 bottom-1 bg-ableton-accent bg-opacity-50
+           border border-ableton-accent rounded-sm;
+  }
+
+  /* Emotion interface */
+  .emotion-card {
+    @apply p-4 rounded-lg bg-ableton-surface border border-ableton-border
+           hover:border-ableton-accent transition-all cursor-pointer;
+  }
+
+  .emotion-card-active {
+    @apply border-ableton-accent shadow-lg shadow-ableton-accent/20;
+  }
+
+  /* Ghost Writer */
+  .ghost-writer-suggestion {
+    @apply p-3 bg-ableton-surface-light rounded border border-ableton-border
+           hover:border-ableton-accent transition-colors cursor-pointer;
+  }
+
+  /* Vertical Fader from idawi */
+  .fader-vertical {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    width: 8px;
+    height: 120px;
+    background: var(--ableton-border);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .fader-vertical::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 10px;
+    background: var(--ableton-text);
+    border-radius: 2px;
+    cursor: grab;
+  }
+
+  .fader-vertical::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    background: var(--ableton-accent);
+  }
+
+  /* Emotion color utilities */
+  .bg-emotion-grief { background-color: var(--emotion-grief); }
+  .bg-emotion-joy { background-color: var(--emotion-joy); }
+  .bg-emotion-anger { background-color: var(--emotion-anger); }
+  .bg-emotion-fear { background-color: var(--emotion-fear); }
+  .bg-emotion-love { background-color: var(--emotion-love); }
+  .bg-emotion-hope { background-color: var(--emotion-hope); }
+  .bg-emotion-melancholy { background-color: var(--emotion-melancholy); }
+  .bg-emotion-rage { background-color: var(--emotion-rage); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-ableton-bg;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-ableton-border hover:bg-ableton-surface-light rounded;
+}
+
+/* Flip card animation */
+.flip-container {
+  perspective: 2000px;
+  @apply w-full h-full;
+}
+
+.flip-card {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  @apply w-full h-full relative;
+}
+
+.flip-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face {
+  backface-visibility: hidden;
+  @apply absolute inset-0 w-full h-full;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Play indicator animation */
+@keyframes playhead {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.playhead-animate {
+  animation: playhead linear infinite;
+}
+
+/* Pulse animation for recording */
+@keyframes record-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.record-pulse {
+  animation: record-pulse 1s ease-in-out infinite;
+}
+
+/* Glass morphism effect for overlays */
+.glass {
+  background: rgba(42, 42, 42, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Custom range input styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  @apply bg-transparent cursor-pointer;
+}
+
+input[type="range"]::-webkit-slider-track {
+  @apply bg-ableton-border rounded-full h-1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  @apply w-3 h-3 bg-ableton-accent rounded-full cursor-pointer;
+}
+
+input[type="range"]::-moz-range-track {
+  @apply bg-ableton-border rounded-full h-1;
+}
+
+input[type="range"]::-moz-range-thumb {
+  @apply w-3 h-3 bg-ableton-accent rounded-full cursor-pointer border-0;
+}
+
+/* Number input styling */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

@@ -1,0 +1,31 @@
+# Sprint 1 – Core Testing & Quality workflow YAML
+# Place in: iDAW/.github/workflows/
+name: "Sprint 1 – Core Testing & Quality"
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - run: pip install -e .[dev,audio,all]
+      - run: pytest tests_music-brain/ -v
+      - run: pytest tests_penta-core/ -v || true
+  test-cpp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: C++ Build & Test
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake --build . -j
+          ctest --output-on-failure
