@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 TASK_DB = Path(".mcp_tasks.json")
+COMPLETED_STATUSES = ("Implemented", "Working")
 
 class TaskManager:
     def __init__(self):
@@ -20,7 +21,7 @@ class TaskManager:
                     "status": obj.status,
                     "file": obj.file_path,
                     "line": obj.line_num,
-                    "complete": obj.status in ("Implemented", "Working")
+                    "complete": obj.status in COMPLETED_STATUSES
                 })
         self._save()
 
@@ -28,7 +29,7 @@ class TaskManager:
         for t in self.data["tasks"]:
             if t["title"] == title:
                 t["status"] = status
-                t["complete"] = status in ("Implemented", "Working")
+                t["complete"] = status in COMPLETED_STATUSES
         self._save()
 
     def list_tasks(self):
