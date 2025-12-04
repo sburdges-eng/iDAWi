@@ -10,7 +10,7 @@
 
 ## Phase 0: Foundation & Architecture (Pre-Alpha)
 
-> **Status**: ~45% Complete | **Priority**: 🔴 BLOCKING - Must complete before Phase 1
+> **Status**: ~60% Complete | **Priority**: 🟡 IN PROGRESS - C++ implementations remain
 
 ### 0.1 Core Architecture Finalization
 
@@ -77,16 +77,16 @@
 - [x] Set up desktop app builds with PyInstaller
 - [x] Define optional dependencies (audio, theory, ui, desktop, build)
 
-#### 🔴 CRITICAL - Build Scripts & Automation
-- [ ] Create `build.sh` one-command build script (Linux/macOS)
-  - [ ] Environment validation (compiler, CMake, Python)
-  - [ ] Dependency installation check
-  - [ ] CMake configuration and build
-  - [ ] Python package installation
-  - [ ] Test execution
-- [ ] Create `build.ps1` one-command build script (Windows)
+#### ✅ COMPLETED - Build Scripts & Automation
+- [x] Create `build.sh` one-command build script (Linux/macOS)
+  - [x] Environment validation (compiler, CMake, Python)
+  - [x] Dependency installation check
+  - [x] CMake configuration and build
+  - [x] Python package installation
+  - [x] Test execution
+- [x] Create `build.ps1` one-command build script (Windows)
 - [ ] Create `setup.sh` / `setup.ps1` for development environment setup
-- [ ] Create unified `test.sh` that runs both Python and C++ tests with aggregated results
+- [x] Create unified `test.sh` that runs both Python and C++ tests with aggregated results
 
 #### 🟡 SHOULD COMPLETE - Build Improvements
 - [ ] Add cross-compilation targets to CI/CD matrix
@@ -118,17 +118,17 @@
 - [x] Define public API exports via `__all__` in Python modules
 - [x] Create package data references in pyproject.toml
 
-#### 🔴 CRITICAL - Fix Duplicate Files (BLOCKING)
-- [ ] Remove duplicate C++ headers (3 identical copies exist!)
-  - [ ] KEEP: `/penta-core/include/penta/` (canonical)
-  - [ ] REMOVE: `/iDAW/include/penta/` (duplicate)
-  - [ ] REMOVE: `/iDAW/iDAWi/native/include/penta/` (duplicate)
-  - [ ] Update any CMake references to use canonical location
-- [ ] Remove duplicate/nested Python packages
-  - [ ] Clean `/DAiW-Music-Brain/DAiW-Music-Brain/` nested copy
-  - [ ] Clean `/DAiW-Music-Brain/DAiW-Music-Brain 2/` backup copy
-  - [ ] Consolidate to single canonical locations
-- [ ] Remove duplicate documentation files
+#### ✅ COMPLETED - Fix Duplicate Files
+- [x] Remove duplicate C++ headers (3 identical copies existed)
+  - [x] KEEP: `/penta-core/include/penta/` (canonical)
+  - [x] REMOVED: `/iDAW/include/penta/` (duplicate)
+  - [x] REMOVED: `/iDAW/iDAWi/native/include/penta/` (duplicate)
+  - [x] Moved unique `ml/MLInterface.h` to canonical location
+- [x] Remove duplicate/nested Python packages
+  - [x] Removed `/DAiW-Music-Brain/DAiW-Music-Brain/` nested copy
+  - [x] Removed `/DAiW-Music-Brain/DAiW-Music-Brain 2/` backup copy
+  - [x] Consolidated to single canonical locations
+- [ ] Remove duplicate documentation files (deferred - non-blocking)
   - [ ] Audit 40+ markdown files in `/iDAW/` root
   - [ ] Consolidate to `/docs/` with clear organization
   - [ ] Remove duplicates like `Audio_Cataloger_Setup.md` vs `Audio Cataloger Setup.md`
@@ -185,8 +185,8 @@ Before proceeding to Phase 1, the following MUST be complete:
 | Requirement | Status | Blocking? |
 |------------|--------|-----------|
 | All C++ stub implementations completed | ❌ Pending | 🔴 YES |
-| Duplicate files removed | ❌ Pending | 🔴 YES |
-| build.sh/build.ps1 created | ❌ Pending | 🔴 YES |
+| Duplicate files removed | ✅ Done | ~~🔴 YES~~ |
+| build.sh/build.ps1 created | ✅ Done | ~~🔴 YES~~ |
 | RT-safety validation in place | ❌ Pending | 🟡 Recommended |
 | ADRs documented | ❌ Pending | 🟡 Recommended |
 | API documentation generated | ❌ Pending | 🟢 Optional |
@@ -993,7 +993,7 @@ Before proceeding to Phase 1, the following MUST be complete:
 
 **Last Updated**: December 2024
 
-### Phase 0: Pre-Alpha (~45% Complete)
+### Phase 0: Pre-Alpha (~60% Complete)
 
 | Area | Completed | Pending | Status |
 |------|-----------|---------|--------|
@@ -1001,11 +1001,11 @@ Before proceeding to Phase 1, the following MUST be complete:
 | Core Algorithm Implementation | 0 items | 10 items | 🔴 Critical |
 | Architecture Documentation | 0 items | 4 ADRs + specs | 🟡 Should Do |
 | Build System Config | 11 items | 0 items | ✅ Done |
-| Build Scripts | 0 items | 4 scripts | 🔴 Critical |
+| Build Scripts | 3 items | 1 item | ✅ Done |
 | Cross-compilation | 0 items | 5 targets | 🟡 Should Do |
 | Project Structure | 7 items | 0 items | ✅ Done |
-| Duplicate Cleanup | 0 items | 3 areas | 🔴 Critical |
-| RT-Safety Infra | 0 items | 7 items | 🔴 Critical |
+| Duplicate Cleanup | 2 areas | 1 area | ✅ Done |
+| RT-Safety Infra | 0 items | 7 items | 🟡 Recommended |
 
 ### What's Working Now
 - ✅ Python music intelligence layer (CLI, emotion analysis, groove extraction)
@@ -1016,16 +1016,19 @@ Before proceeding to Phase 1, the following MUST be complete:
 - ✅ React + Tauri UI foundation scaffolded
 - ✅ CrewAI agent framework for local LLM orchestration
 - ✅ 11 art-themed plugins specified
+- ✅ **NEW**: `build.sh` and `build.ps1` one-command build scripts
+- ✅ **NEW**: `test.sh` unified test runner
+- ✅ **NEW**: Duplicate C++ headers and Python packages removed
 
-### 🔴 Critical Blockers (Must Fix Before Phase 1)
-1. **All C++ implementations are stubs** - No actual algorithms
-2. **Duplicate files** - 3 copies of headers, nested packages
-3. **No build scripts** - Manual CMake required
-4. **No RT-safety validation** - Can't verify audio thread safety
+### 🟡 Remaining Blockers (Before Phase 1)
+1. **All C++ implementations are stubs** - No actual algorithms (10 modules)
+2. ~~**Duplicate files** - 3 copies of headers, nested packages~~ ✅ FIXED
+3. ~~**No build scripts** - Manual CMake required~~ ✅ FIXED
+4. **No RT-safety validation** - Can't verify audio thread safety (recommended)
 
 ### Immediate Next Steps
-1. Remove duplicate files and consolidate structure
-2. Create `build.sh` / `build.ps1` scripts
+1. ~~Remove duplicate files and consolidate structure~~ ✅ DONE
+2. ~~Create `build.sh` / `build.ps1` scripts~~ ✅ DONE
 3. Implement `RTMessageQueue` (first real lock-free code)
 4. Implement `ChordAnalyzer` and `TempoEstimator`
 5. Set up RT-safety validation framework
