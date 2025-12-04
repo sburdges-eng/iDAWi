@@ -1,0 +1,190 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build: Full Project",
+      "type": "shell",
+      "command": "./build.sh",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Build: penta-core C++",
+      "type": "shell",
+      "command": "cd penta-core && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j$(nproc || sysctl -n hw.ncpu)",
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Build: DAiW Music Brain",
+      "type": "shell",
+      "command": "cd DAiW-Music-Brain && pip install -e .[audio,theory,ui]",
+      "group": "build"
+    },
+    {
+      "label": "Build: iDAW React UI",
+      "type": "shell",
+      "command": "cd iDAW && npm install && npm run build",
+      "group": "build"
+    },
+    {
+      "label": "Test: Full Suite",
+      "type": "shell",
+      "command": "./test.sh",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Test: C++ Unit Tests",
+      "type": "shell",
+      "command": "cd penta-core/build && ctest -V --output-on-failure",
+      "group": "test",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Test: Python Unit Tests",
+      "type": "shell",
+      "command": "cd DAiW-Music-Brain && pytest tests/ -v --tb=short",
+      "group": "test"
+    },
+    {
+      "label": "Test: Phase 1 Audio",
+      "type": "shell",
+      "command": "cd penta-core/build && ctest -R 'Audio|MIDI|Transport|Mixer' -V",
+      "group": "test"
+    },
+    {
+      "label": "Test: Memory Leak Detection",
+      "type": "shell",
+      "command": "cd penta-core/build && ctest -T memcheck",
+      "group": "test",
+      "isBackground": true
+    },
+    {
+      "label": "Test: Performance Benchmark",
+      "type": "shell",
+      "command": "cd penta-core/build && ./bin/benchmark",
+      "group": "test"
+    },
+    {
+      "label": "Clean: Full Build",
+      "type": "shell",
+      "command": "rm -rf penta-core/build DAiW-Music-Brain/build iDAW/dist iDAW/node_modules && echo '✓ Clean complete'",
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean: Python Cache",
+      "type": "shell",
+      "command": "find . -type d -name '__pycache__' -exec rm -rf {} + && find . -type f -name '*.pyc' -delete && echo '✓ Python cache cleaned'",
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Stage All Changes",
+      "type": "shell",
+      "command": "git add -A && git status",
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Commit with Message",
+      "type": "shell",
+      "command": "git commit -m \"${input:commitMessage}\"",
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Push to Branch",
+      "type": "shell",
+      "command": "git push -u origin $(git rev-parse --abbrev-ref HEAD)",
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: Start C++ Watch Build",
+      "type": "shell",
+      "command": "cd penta-core && while inotifywait -r -e modify src/ include/; do cmake --build build -j$(nproc); done",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: Python Linting",
+      "type": "shell",
+      "command": "cd DAiW-Music-Brain && python -m pylint music_brain/ --disable=all --enable=W,E",
+      "problemMatcher": ["$pylint"]
+    },
+    {
+      "label": "Dev: Code Format (Black)",
+      "type": "shell",
+      "command": "cd DAiW-Music-Brain && black music_brain/ tests/ --line-length=100",
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: C++ Format Check",
+      "type": "shell",
+      "command": "cd penta-core && find src include -name '*.cpp' -o -name '*.h' | xargs clang-format -i",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: Run Audio I/O Test",
+      "type": "shell",
+      "command": "cd penta-core/build && ./bin/test_audio_io",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Debug: Run MIDI Test",
+      "type": "shell",
+      "command": "cd penta-core/build && ./bin/test_midi",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Debug: Python REPL (Music Brain)",
+      "type": "shell",
+      "command": "cd DAiW-Music-Brain && python -i -c \"from music_brain.session import EmotionAnalyzer; analyzer = EmotionAnalyzer(); print('Ready: use analyzer.analyze(text)')\"",
+      "isBackground": false
+    },
+    {
+      "label": "Docs: Generate C++ Documentation",
+      "type": "shell",
+      "command": "cd penta-core && doxygen Doxyfile",
+      "problemMatcher": []
+    },
+    {
+      "label": "Docs: Generate Python Documentation",
+      "type": "shell",
+      "command": "cd DAiW-Music-Brain && sphinx-build -b html docs/ docs/_build/",
+      "problemMatcher": []
+    },
+    {
+      "label": "Setup: Install All Dependencies",
+      "type": "shell",
+      "command": "./build.sh --dependencies",
+      "problemMatcher": []
+    },
+    {
+      "label": "Setup: Verify Installation",
+      "type": "shell",
+      "command": "echo '=== Verification ===' && cmake --version && python3 --version && npm --version && git --version",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "commitMessage",
+      "type": "promptString",
+      "description": "Commit message",
+      "default": "WIP: implementation progress"
+    }
+  ]
+}
