@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    "ms-vscode.cpptools",
+    "ms-vscode.cmake-tools",
+    "xaver.clang-format",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-vscode.makefile-tools",
+    "eamodio.gitlens",
+    "GitHub.copilot",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode-remote.remote-ssh",
+    "DavidAnson.vscode-markdownlint",
+    "bierner.markdown-preview-github-styles",
+    "ms-azuretools.vscode-docker",
+    "esbenp.prettier-vscode",
+    "yzhang.markdown-all-in-one",
+    "streetsidesoftware.code-spell-checker",
+    "mikestead.dotenv",
+    "shardulm94.trailing-spaces",
+    "alefragnani.bookmarks",
+    "usernamehw.errorlens",
+    "GitHub.vscode-github-actions",
+    "ms-vscode.azure-repos",
+    "ms-azuretools.vscode-bicep"
+  ]
+}

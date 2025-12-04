@@ -1,0 +1,105 @@
+{
+  "editor.defaultFormatter": "ms-vscode.cpptools",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "editor.formatOnSave": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "C_Cpp.default.compilerPath": "/usr/bin/g++",
+  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.default.cStandard": "c17",
+  "C_Cpp.formatting": "clangFormat",
+  "C_Cpp.clang_format_style": "Google",
+  "C_Cpp.intelliSenseEngine": "default",
+  "C_Cpp.intelliSenseEngineFallback": "enabled",
+  "cmake.autoSelectActiveFolder": true,
+  "cmake.buildDirectory": "${workspaceFolder}/penta-core/build",
+  "cmake.configureOnOpen": true,
+  "cmake.configureSettings": {
+    "CMAKE_BUILD_TYPE": "Debug",
+    "CMAKE_CXX_FLAGS": "-Wall -Wextra -pedantic"
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/DAiW-Music-Brain/venv/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.linting.pylintArgs": [
+    "--disable=R,C",
+    "--enable=W,E"
+  ],
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": [
+    "--line-length=100"
+  ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/DAiW-Music-Brain"
+  ],
+  "git.ignoreLimitWarning": true,
+  "git.useEditorAsCommitEditor": false,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/build": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/venv": true,
+    "**/*.o": true,
+    "**/*.a": true
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/venv": true,
+    "**/*.o": true,
+    "**/*.a": true
+  },
+  "files.associations": {
+    "*.h": "cpp",
+    "*.hpp": "cpp",
+    "CMakeLists.txt": "cmake",
+    "*.md": "markdown"
+  },
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.trimAutoWhitespace": true,
+  "editor.rulers": [
+    80,
+    100,
+    120
+  ],
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 100,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "editor.autoClosingBrackets": "always",
+  "editor.autoClosingQuotes": "always",
+  "editor.autoSurround": "languageDefined",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.defaultProfile.osx": "bash",
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.lineHeight": 1.2,
+  "extensions.autoUpdate": true,
+  "extensions.ignoreRecommendations": false
+}
