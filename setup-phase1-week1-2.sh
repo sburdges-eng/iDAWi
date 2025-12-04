@@ -4,7 +4,9 @@
 
 set -e
 
-cd /home/user/iDAWi
+# Change to the script's directory (repository root)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 echo "=========================================="
 echo "iDAWi Phase 1 Week 1-2 Setup"
@@ -864,7 +866,7 @@ echo "  - penta-core/src/audio/backends/WASAPIDevice.cpp"
 echo "  - penta-core/src/audio/backends/ALSADevice.cpp"
 echo ""
 echo "Next steps:"
-echo "  1. cd /home/user/iDAWi"
+echo "  1. cd \"$SCRIPT_DIR\""
 echo "  2. ./build.sh"
 echo "  3. ./test.sh"
 echo ""
