@@ -110,9 +110,11 @@ void TempoEstimator::estimateTempo() noexcept {
     float expectedVariance = meanTempo * 0.1f;  // 10% variance is normal
     confidence_ = 1.0f / (1.0f + variance / (expectedVariance * expectedVariance));
 
-    // Apply temporal smoothing
-    currentTempo_ = config_.smoothingFactor * currentTempo_
-                  + (1.0f - config_.smoothingFactor) * bestTempo;
+    // Apply temporal smoothing using adaptationRate
+    // Higher adaptationRate means faster adaptation to new tempo
+    float smoothingFactor = 1.0f - config_.adaptationRate;
+    currentTempo_ = smoothingFactor * currentTempo_
+                  + config_.adaptationRate * bestTempo;
 }
 
 float TempoEstimator::autocorrelate(const std::vector<float>& intervals) const noexcept {

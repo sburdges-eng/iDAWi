@@ -5,7 +5,12 @@
  * This is an interface-only stub for MIDI device I/O.
  * Full implementation requires a MIDI library (RtMidi, PortMidi, etc.)
  *
- * TODO: Integrate with a MIDI library for actual device I/O
+ * Integration guide:
+ *   1. Add RtMidi dependency (https://github.com/thestk/rtmidi)
+ *   2. Replace stub methods in MidiIO.cpp with RtMidi API calls
+ *   3. Handle platform-specific MIDI device enumeration
+ *
+ * @see MidiIO.cpp for implementation notes and integration examples
  */
 
 #pragma once
