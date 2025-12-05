@@ -4,7 +4,7 @@ TODO Data Models
 Defines the core data structures for task management.
 """
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, fields
 from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Dict, Any
@@ -72,13 +72,24 @@ class Todo:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Todo":
-        """Create from dictionary."""
+        """Create from dictionary.
+
+        Handles extra fields gracefully by filtering to only known fields.
+        This allows forward compatibility when loading data with new fields.
+        """
+        # Get valid field names for this dataclass
+        valid_fields = {f.name for f in fields(cls)}
+
+        # Filter to only known fields
+        filtered_data = {k: v for k, v in data.items() if k in valid_fields}
+
         # Handle enum conversion
-        if isinstance(data.get("status"), str):
-            data["status"] = TodoStatus(data["status"])
-        if isinstance(data.get("priority"), str):
-            data["priority"] = TodoPriority(data["priority"])
-        return cls(**data)
+        if isinstance(filtered_data.get("status"), str):
+            filtered_data["status"] = TodoStatus(filtered_data["status"])
+        if isinstance(filtered_data.get("priority"), str):
+            filtered_data["priority"] = TodoPriority(filtered_data["priority"])
+
+        return cls(**filtered_data)
 
     def mark_complete(self, ai_source: Optional[str] = None) -> None:
         """Mark the task as completed."""
