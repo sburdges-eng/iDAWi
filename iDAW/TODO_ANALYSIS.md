@@ -4,29 +4,32 @@ This document categorizes and explains the TODO items in the codebase.
 
 ## Summary
 
-**Total TODO items**: ~100 (reduced from ~200 after penta-core implementations)
+**Actual actionable TODO items**: ~12 (reduced from ~200 after penta-core implementations)
+
+> **Note**: The `mcp_todo/` directory contains many occurrences of "TODO" as a **product name**
+> (e.g., "MCP TODO Server", "TODO Storage Backend"). These are NOT actionable tasks.
 
 ### Categories
 
-1. **MCP TODO Server** (90 items) - Feature implementation TODOs in the TODO management tool itself
-2. ~~**Penta-Core C++ Stubs** (25 items)~~ - ✅ **ALL IMPLEMENTED** (December 2025)
-3. **Documentation TODOs** (2 items) - Future integration planning notes
-4. **Bridge/Integration TODOs** (2 items) - Future feature implementations
-5. **Audio File TODOs** (2 items) - libsndfile integration placeholders
+1. ~~**Penta-Core C++ Stubs** (25 items)~~ - ✅ **ALL IMPLEMENTED** (December 2025)
+2. **Audio File TODOs** (2 items) - libsndfile integration placeholders
+3. **Mobile TODOs** (2 items) - iOS audio unit stubs
+4. **Plugin Host TODOs** (1 item) - Plugin validation placeholder
+5. **Bridge/Integration TODOs** (2 items) - Future feature implementations
+6. **Documentation TODOs** (2 items) - Future integration planning notes
+7. **Compiler/Library TODOs** (3 items) - External (LLVM/GCC) - not actionable
 
 ---
 
 ## 1. MCP TODO Server (mcp_todo/)
 
-**Status**: These are internal TODOs within the TODO management tool itself
+**Status**: ✅ NOT ACTUAL TODOS - These are product/feature names
 
-**Files**:
-- `mcp_todo/server.py` (36 TODOs) - Tool descriptions and help text
-- `mcp_todo/cli.py` (34 TODOs) - CLI command descriptions
-- `mcp_todo/storage.py` (20 TODOs) - Storage backend descriptions
-- `mcp_todo/http_server.py` (18 TODOs) - HTTP API descriptions
+The `mcp_todo/` directory is a task management tool. Occurrences of "TODO" in this directory
+are the **product name** (e.g., "MCP TODO Server", "Add a new TODO", "TODO Storage Backend"),
+not code comments requiring action.
 
-**Action**: NO ACTION NEEDED - These are part of the tool's functionality, not tasks to complete.
+**Action**: NO ACTION NEEDED - These are product names, not tasks to complete.
 
 ---
 
@@ -95,47 +98,7 @@ All penta-core C++ modules are now fully functional with no remaining TODO comme
 
 ---
 
-## 3. Documentation TODOs
-
-### DAiW-Music-Brain/music_brain/structure/__init__.py (1 TODO)
-
-```python
-TODO: Future integration planned for:
-- Therapy-based music generation workflows
-- Emotional mapping to harmonic structures
-- Session-aware progression recommendations
-```
-
-**Status**: Future planning note
-**Action**: KEEP AS-IS - This is documentation of planned future features.
-
----
-
-## 4. Bridge/Integration TODOs
-
-### BridgeClient.cpp (2 TODOs)
-
-```cpp
-// TODO: Implement auto-tune RPC pipeline via OSC
-// TODO: Replace with offline chatbot service call
-```
-
-**Status**: Future feature implementations
-**Action**: KEEP AS-IS - These are planned features, not bugs.
-
-### phases.py and mcp_workstation/phases.py (4 TODOs)
-
-```python
-"MCP TODO server",
-description="MCP TODO server for multi-AI",
-```
-
-**Status**: Feature descriptions
-**Action**: NO ACTION NEEDED - This is feature documentation.
-
----
-
-## 5. Audio File TODOs
+## 3. Audio File TODOs
 
 ### iDAW/src/audio/AudioFile.cpp (2 TODOs)
 
@@ -151,7 +114,79 @@ description="MCP TODO server for multi-AI",
 
 ---
 
-## 6. Miscellaneous TODOs
+## 4. Mobile TODOs
+
+### iDAW/mobile/ios_audio_unit.py (2 TODOs)
+
+```cpp
+// TODO: Implement audio processing (line 311)
+// TODO: Handle MIDI events (line 318)
+```
+
+**Status**: iOS Audio Unit stub code
+**Action**: LOW PRIORITY - Placeholder for future iOS mobile implementation.
+
+---
+
+## 5. Plugin Host TODOs
+
+### iDAW/mcp_plugin_host/scanner.py (1 TODO)
+
+```python
+# TODO: Actual validation would load the plugin via JUCE (line 433)
+```
+
+**Status**: Plugin validation placeholder
+**Action**: LOW PRIORITY - Current implementation does format-based validation.
+
+---
+
+## 6. Compiler/Library TODOs
+
+### iDAW/availability.h (3 TODOs)
+
+```cpp
+// TODO: Enable additional explicit instantiations on GCC (line 356)
+// TODO: Enable them on Windows once https://llvm.org/PR41018 has been fixed (line 358)
+// TODO: Enable std::pmr markup once https://github.com/llvm/llvm-project/issues/40340 has been fixed (line 379)
+```
+
+**Status**: LLVM/GCC standard library issues - external to this project
+**Action**: NOT ACTIONABLE - These are upstream compiler/library issues.
+
+---
+
+## 7. Documentation TODOs
+
+### DAiW-Music-Brain/music_brain/structure/__init__.py (1 TODO)
+
+```python
+TODO: Future integration planned for:
+- Therapy-based music generation workflows
+- Emotional mapping to harmonic structures
+- Session-aware progression recommendations
+```
+
+**Status**: Future planning note
+**Action**: KEEP AS-IS - This is documentation of planned future features.
+
+---
+
+## 8. Bridge/Integration TODOs
+
+### BridgeClient.cpp (2 TODOs)
+
+```cpp
+// TODO: Implement auto-tune RPC pipeline via OSC
+// TODO: Replace with offline chatbot service call
+```
+
+**Status**: Future feature implementations
+**Action**: KEEP AS-IS - These are planned features, not bugs.
+
+---
+
+## 9. Miscellaneous TODOs
 
 ### daiw_menubar.py (1 TODO)
 
@@ -179,12 +214,15 @@ description="MCP TODO server for multi-AI",
 
 | Category | Items | Status |
 |----------|-------|--------|
-| MCP TODO Server | 90 | Part of tool functionality |
 | Penta-Core C++ | 25 | ✅ **ALL IMPLEMENTED** |
-| Documentation | 2 | Future planning notes |
-| Bridge/Integration | 2 | Planned features |
 | Audio File | 2 | Low priority enhancement |
+| Mobile | 2 | iOS placeholder stubs |
+| Plugin Host | 1 | Low priority enhancement |
+| Compiler/Library | 3 | External (not actionable) |
+| Documentation | 1 | Future planning note |
+| Bridge/Integration | 2 | Planned features |
 | Miscellaneous | 2 | Low priority |
+| **MCP TODO mentions** | ~50 | Product names (NOT tasks) |
 
 **Key Achievement**: All 25 penta-core C++ stubs have been fully implemented, including:
 - Complete Groove module (onset detection, tempo estimation, rhythm quantization)
@@ -202,6 +240,8 @@ description="MCP TODO server for multi-AI",
 3. ✅ **Use mcp_todo tool** to track new actionable tasks separately from code comments
 
 4. 🔄 **Optional**: Integrate libsndfile for enhanced audio format support
+
+5. 🔄 **Optional**: Implement iOS audio unit processing for mobile support
 
 ---
 
