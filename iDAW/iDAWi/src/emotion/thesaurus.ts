@@ -53,11 +53,11 @@ export interface EmotionNode {
 }
 
 /**
- * Map valence level to grid index (1-6)
+ * Map valence/arousal/dominance level to grid index (0-5)
+ * Follows the 6×6×6 grid convention matching vadToGridPosition
  */
-export function valenceToLevel(valence: number): 1 | 2 | 3 | 4 | 5 | 6 {
-  const normalized = (valence + 1) / 2; // 0 to 1
-  return Math.max(1, Math.min(6, Math.ceil(normalized * 6))) as 1 | 2 | 3 | 4 | 5 | 6;
+export function valueToGridLevel(value: number): 0 | 1 | 2 | 3 | 4 | 5 {
+  return Math.min(5, Math.floor((value + 1) / 2 * 5.99)) as 0 | 1 | 2 | 3 | 4 | 5;
 }
 
 /**
@@ -451,7 +451,7 @@ export function getAllEmotionNames(): string[] {
  * Get grid position for V-A-D coordinates (0-5 for each dimension)
  */
 export function vadToGridPosition(vad: VADCoordinates): { v: number; a: number; d: number } {
-  const normalize = (value: number) => Math.floor((value + 1) / 2 * 5.99);
+  const normalize = (value: number) => Math.min(5, Math.floor((value + 1) / 2 * 5.99));
   return {
     v: normalize(vad.valence),
     a: normalize(vad.arousal),
