@@ -17,9 +17,6 @@ python:
   - changed-files:
       - any-glob-to-any-file:
           - '**/*.py'
-          - 'iDAW/python/**'
-          - 'DAiW-Music-Brain/**/*.py'
-          - 'penta-core/python/**/*.py'
 
 audio:
   - changed-files:

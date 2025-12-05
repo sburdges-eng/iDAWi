@@ -15,7 +15,15 @@ curl -sSL https://raw.githubusercontent.com/sburdges-eng/iDAWi/main/setup-idaw.s
 git clone https://github.com/sburdges-eng/iDAWi.git && cd iDAWi
 
 # Create all config directories
-mkdir -p .claude .devcontainer .github/workflows iDAW/iDAWi/src-tauri/src/{audio,commands,python} iDAW/iDAWi/src/{components,emotion,hooks,stores} python/idaw_generator
+mkdir -p .claude .devcontainer .github/workflows
+mkdir -p iDAW/iDAWi/src-tauri/src/audio
+mkdir -p iDAW/iDAWi/src-tauri/src/commands
+mkdir -p iDAW/iDAWi/src-tauri/src/python
+mkdir -p iDAW/iDAWi/src/components
+mkdir -p iDAW/iDAWi/src/emotion
+mkdir -p iDAW/iDAWi/src/hooks
+mkdir -p iDAW/iDAWi/src/stores
+mkdir -p python/idaw_generator
 
 # Install dependencies
 cd iDAW/iDAWi && npm install && cd ../..

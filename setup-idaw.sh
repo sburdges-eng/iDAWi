@@ -31,7 +31,10 @@ if [ -d ".git" ]; then
 else
     # Clone if not already in repo
     echo -e "${YELLOW}Cloning iDAWi repository...${NC}"
-    git clone https://github.com/sburdges-eng/iDAWi.git
+    if ! git clone https://github.com/sburdges-eng/iDAWi.git; then
+        echo -e "${RED}Failed to clone repository. Check your network connection.${NC}"
+        exit 1
+    fi
     cd iDAWi
     REPO_DIR="$(pwd)"
 fi
@@ -68,18 +71,20 @@ case "$MODE" in
         if command -v npm &> /dev/null; then
             echo "Installing npm dependencies..."
             cd "${REPO_DIR}/iDAW/iDAWi"
-            npm install 2>/dev/null || echo -e "${YELLOW}npm install skipped (may need to run manually)${NC}"
+            if ! npm install; then
+                echo -e "${YELLOW}npm install failed. You may need to run it manually.${NC}"
+            fi
             cd "${REPO_DIR}"
         else
             echo -e "${YELLOW}npm not found. Skipping npm dependencies.${NC}"
         fi
         
         # Check for pip
-        if command -v pip &> /dev/null; then
+        if command -v pip &> /dev/null || command -v pip3 &> /dev/null; then
             echo "Installing Python dependencies..."
-            pip install numpy midiutil black mypy 2>/dev/null || \
-            pip3 install numpy midiutil black mypy 2>/dev/null || \
-            echo -e "${YELLOW}pip install skipped (may need to run manually)${NC}"
+            if ! pip install numpy midiutil black mypy 2>&1 && ! pip3 install numpy midiutil black mypy 2>&1; then
+                echo -e "${YELLOW}pip install failed. You may need to run it manually.${NC}"
+            fi
         else
             echo -e "${YELLOW}pip not found. Skipping Python dependencies.${NC}"
         fi
@@ -97,14 +102,16 @@ case "$MODE" in
         
         if command -v npm &> /dev/null; then
             cd "${REPO_DIR}/iDAW/iDAWi"
-            npm install 2>/dev/null || echo -e "${YELLOW}npm install failed${NC}"
+            if ! npm install; then
+                echo -e "${YELLOW}npm install failed${NC}"
+            fi
             cd "${REPO_DIR}"
         fi
         
-        if command -v pip &> /dev/null; then
-            pip install numpy midiutil black mypy pytest 2>/dev/null || \
-            pip3 install numpy midiutil black mypy pytest 2>/dev/null || \
-            echo -e "${YELLOW}pip install failed${NC}"
+        if command -v pip &> /dev/null || command -v pip3 &> /dev/null; then
+            if ! pip install numpy midiutil black mypy pytest 2>&1 && ! pip3 install numpy midiutil black mypy pytest 2>&1; then
+                echo -e "${YELLOW}pip install failed${NC}"
+            fi
         fi
         ;;
         
