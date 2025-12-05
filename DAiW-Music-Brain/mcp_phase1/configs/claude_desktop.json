@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "phase1-audio-engine": {
+      "command": "python",
+      "args": ["-m", "mcp_phase1.server"],
+      "cwd": "/home/user/iDAWi/DAiW-Music-Brain",
+      "env": {
+        "PYTHONPATH": "/home/user/iDAWi/DAiW-Music-Brain"
+      }
+    }
+  }
+}
