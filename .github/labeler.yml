@@ -1,0 +1,66 @@
+# Auto-labeling configuration for iDAW
+# Labels are applied based on file paths in PRs
+
+rust:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'iDAW/iDAWi/src-tauri/**/*.rs'
+          - 'penta-core/**/*.rs'
+
+typescript:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'iDAW/iDAWi/src/**/*.ts'
+          - 'iDAW/iDAWi/src/**/*.tsx'
+
+python:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.py'
+          - 'iDAW/python/**'
+          - 'DAiW-Music-Brain/**/*.py'
+          - 'penta-core/python/**/*.py'
+
+audio:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'iDAW/iDAWi/src-tauri/src/audio/**'
+          - 'iDAW/iDAWi/src/hooks/useAudioEngine.ts'
+          - 'penta-core/src/audio/**'
+          - 'penta-core/include/penta/audio/**'
+
+emotion:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'iDAW/iDAWi/src/emotion/**'
+          - 'python/idaw_generator/**'
+          - 'iDAW/emotion_thesaurus.py'
+
+cpp:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'penta-core/**/*.cpp'
+          - 'penta-core/**/*.h'
+          - 'penta-core/**/*.hpp'
+          - 'iDAW/*.cpp'
+          - 'iDAW/*.h'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+          - 'docs/**'
+
+workflow:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.json'
+          - '**/*.yaml'
+          - '**/*.yml'
+          - '**/*.toml'
+          - '.vscode/**'
