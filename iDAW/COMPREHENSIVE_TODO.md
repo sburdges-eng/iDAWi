@@ -1,6 +1,6 @@
 # iDAW Comprehensive To-Do List
 
-> Updated: 2025-12-04 | Version: 0.2.1 (Alpha)
+> Updated: 2025-12-05 | Version: 0.2.2 (Alpha)
 
 This document provides a complete roadmap of tasks for the iDAW project, organized by priority and component.
 
@@ -298,6 +298,8 @@ This document provides a complete roadmap of tasks for the iDAW project, organiz
 ### C++ (Penta-Core)
 | Task | Priority | Status |
 |------|----------|--------|
+| **MIDI Engine** | HIGH | ✅ Complete (948 lines) |
+| **Transport System** | HIGH | ✅ Complete (843 lines) |
 | OnsetDetector FFT upgrade | HIGH | Pending |
 | Phase Vocoder implementation | HIGH | Pending |
 | SIMD optimization | MEDIUM | Pending |
@@ -398,6 +400,13 @@ This document provides a complete roadmap of tasks for the iDAW project, organiz
 
 ## ✅ Recently Completed (For Reference)
 
+### December 2025
+- ✅ **MIDIEngine** (948 lines) - Cross-platform MIDI I/O via RtMidi
+- ✅ **Transport** (843 lines) - Sample-accurate transport with looping
+- ✅ **MIDIClock** - Internal/External clock sync with 3 modes
+- ✅ **MIDIBuffer** - Lock-free ring buffers for RT-safe MIDI
+
+### Previous
 - ✅ All code-level TODOs resolved
 - ✅ Harmony/Scale history tracking in HarmonyEngine
 - ✅ Lock-free RTMessageQueue
@@ -414,4 +423,4 @@ This document provides a complete roadmap of tasks for the iDAW project, organiz
 
 *"Interrogate Before Generate" - The tool shouldn't finish art for people. It should make them braver.*
 
-*Last updated: 2025-12-04*
+*Last updated: 2025-12-05*
