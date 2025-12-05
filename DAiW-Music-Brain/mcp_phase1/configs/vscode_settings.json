@@ -1,0 +1,19 @@
+{
+  "mcp.servers": {
+    "phase1-audio-engine": {
+      "command": "python",
+      "args": ["-m", "mcp_phase1.server"],
+      "cwd": "${workspaceFolder}/DAiW-Music-Brain",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/DAiW-Music-Brain"
+      }
+    }
+  },
+  "github.copilot.chat.experimental.mcpServers": {
+    "phase1-audio-engine": {
+      "command": "python",
+      "args": ["-m", "mcp_phase1.server"],
+      "cwd": "${workspaceFolder}/DAiW-Music-Brain"
+    }
+  }
+}

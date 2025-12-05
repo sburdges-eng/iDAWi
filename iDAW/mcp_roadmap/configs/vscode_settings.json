@@ -1,0 +1,11 @@
+{
+  "mcp": {
+    "servers": {
+      "mcp-roadmap": {
+        "command": "python",
+        "args": ["-m", "mcp_roadmap.server"],
+        "cwd": "${workspaceFolder}/iDAW"
+      }
+    }
+  }
+}

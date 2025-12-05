@@ -71,6 +71,13 @@ all = [
 
 [project.scripts]
 daiw = "music_brain.cli:main"
+# MCP Servers
+mcp-todo-server = "mcp_todo.server:main"
+mcp-todo = "mcp_todo.cli:main"
+mcp-workstation = "mcp_workstation.server:run_server"
+mcp-workstation-cli = "mcp_workstation.cli:main"
+mcp-plugin-host = "mcp_plugin_host.server:main"
+mcp-plugin-host-cli = "mcp_plugin_host.cli:main"
 
 [project.gui-scripts]
 daiw-desktop = "launcher:main"

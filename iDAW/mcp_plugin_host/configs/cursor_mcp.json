@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "mcp-plugin-host": {
+      "command": "python",
+      "args": ["-m", "mcp_plugin_host.server"],
+      "env": {},
+      "cwd": "${workspaceFolder}/iDAW"
+    }
+  }
+}

@@ -4,58 +4,72 @@ set(PENTA_CORE_SOURCES
     # Common utilities
     common/RTMemoryPool.cpp
     common/RTLogger.cpp
-    
+
     # Harmony engine
     harmony/ChordAnalyzer.cpp
     harmony/ChordAnalyzerSIMD.cpp
     harmony/ScaleDetector.cpp
     harmony/VoiceLeading.cpp
     harmony/HarmonyEngine.cpp
-    
+
     # Groove analysis
     groove/OnsetDetector.cpp
     groove/TempoEstimator.cpp
     groove/RhythmQuantizer.cpp
     groove/GrooveEngine.cpp
-    
+
     # Diagnostics
     diagnostics/PerformanceMonitor.cpp
     diagnostics/AudioAnalyzer.cpp
     diagnostics/DiagnosticsEngine.cpp
-    
+
     # OSC communication
     osc/OSCServer.cpp
     osc/OSCClient.cpp
-        osc/OSCMessage.cpp
-        osc/OSCClient.cpp
-        osc/OSCHub.cpp
-        osc/RTMessageQueue.cpp
+    osc/OSCMessage.cpp
+    osc/OSCHub.cpp
+    osc/RTMessageQueue.cpp
+
+    # MIDI engine (Phase 1 Week 3-4)
+    midi/MIDIEngine.cpp
+
+    # Transport system (Phase 1 Week 5-6)
+    transport/Transport.cpp
 )
 
 set(PENTA_CORE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/penta/common/RTMemoryPool.h
     ${PROJECT_SOURCE_DIR}/include/penta/common/RTLogger.h
     ${PROJECT_SOURCE_DIR}/include/penta/common/RTTypes.h
-    
+
     ${PROJECT_SOURCE_DIR}/include/penta/harmony/ChordAnalyzer.h
     ${PROJECT_SOURCE_DIR}/include/penta/harmony/ScaleDetector.h
     ${PROJECT_SOURCE_DIR}/include/penta/harmony/VoiceLeading.h
     ${PROJECT_SOURCE_DIR}/include/penta/harmony/HarmonyEngine.h
-    
+
     ${PROJECT_SOURCE_DIR}/include/penta/groove/OnsetDetector.h
     ${PROJECT_SOURCE_DIR}/include/penta/groove/TempoEstimator.h
     ${PROJECT_SOURCE_DIR}/include/penta/groove/RhythmQuantizer.h
     ${PROJECT_SOURCE_DIR}/include/penta/groove/GrooveEngine.h
-    
+
     ${PROJECT_SOURCE_DIR}/include/penta/diagnostics/PerformanceMonitor.h
     ${PROJECT_SOURCE_DIR}/include/penta/diagnostics/AudioAnalyzer.h
     ${PROJECT_SOURCE_DIR}/include/penta/diagnostics/DiagnosticsEngine.h
-    
+
     ${PROJECT_SOURCE_DIR}/include/penta/osc/OSCServer.h
     ${PROJECT_SOURCE_DIR}/include/penta/osc/OSCClient.h
     ${PROJECT_SOURCE_DIR}/include/penta/osc/OSCMessage.h
     ${PROJECT_SOURCE_DIR}/include/penta/osc/RTMessageQueue.h
     ${PROJECT_SOURCE_DIR}/include/penta/osc/OSCHub.h
+
+    # MIDI engine headers (Phase 1 Week 3-4)
+    ${PROJECT_SOURCE_DIR}/include/penta/midi/MIDITypes.h
+    ${PROJECT_SOURCE_DIR}/include/penta/midi/MIDIBuffer.h
+    ${PROJECT_SOURCE_DIR}/include/penta/midi/MIDIClock.h
+    ${PROJECT_SOURCE_DIR}/include/penta/midi/MIDIEngine.h
+
+    # Transport headers (Phase 1 Week 5-6)
+    ${PROJECT_SOURCE_DIR}/include/penta/transport/Transport.h
 )
 
 add_library(penta_core STATIC
