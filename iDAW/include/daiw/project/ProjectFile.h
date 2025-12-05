@@ -49,7 +49,7 @@ struct Track {
     // Audio-specific
     std::string audioFilePath;
     
-    // TODO: Plugin chain, automation, etc.
+    // Future: Plugin chain, automation, etc.
 };
 
 /**
@@ -59,7 +59,7 @@ struct MixerState {
     float masterVolume = 1.0f;
     bool masterMuted = false;
     
-    // TODO: Bus routing, sends, etc.
+    // Future: Bus routing, sends, etc.
 };
 
 /**

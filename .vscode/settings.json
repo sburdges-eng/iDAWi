@@ -101,5 +101,13 @@
   "terminal.integrated.fontSize": 12,
   "terminal.integrated.lineHeight": 1.2,
   "extensions.autoUpdate": true,
-  "extensions.ignoreRecommendations": false
+  "extensions.ignoreRecommendations": false,
+  "github.copilot.chat.mcp.enabled": true,
+  "github.copilot.chat.mcp.servers": {
+    "mcp-todo": {
+      "command": "python",
+      "args": ["-m", "mcp_todo.server"],
+      "cwd": "${workspaceFolder}/DAiW-Music-Brain"
+    }
+  }
 }
