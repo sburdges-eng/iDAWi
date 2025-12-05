@@ -1,0 +1,21 @@
+# ninja log v7
+0	4	1764894038054498119	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-mkdir	664a830461378002
+0	4	1764894038054498119	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-mkdir	664a830461378002
+4	1256	1764894039306499735	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-download	3bb7d0256492079f
+4	1256	1764894039306499735	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-download	3bb7d0256492079f
+1256	1266	1764894039307499737	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-update	b79180e658d20b85
+1256	1266	1764894039307499737	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-update	b79180e658d20b85
+1266	1270	1764894039319499752	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-patch	a6c39bb1ad2fcdcc
+1266	1270	1764894039319499752	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-patch	a6c39bb1ad2fcdcc
+1270	1274	1764894039324499759	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-configure	e9792ec042c3c26a
+1270	1274	1764894039324499759	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-configure	e9792ec042c3c26a
+1275	1279	1764894039328499764	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-build	f1eb82e7c9f017b9
+1275	1279	1764894039328499764	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-build	f1eb82e7c9f017b9
+1279	1283	1764894039333499770	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-install	40d14be98f8da6f4
+1279	1283	1764894039333499770	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-install	40d14be98f8da6f4
+1283	1287	1764894039336499774	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-test	9f92e8f5fa12fa37
+1283	1287	1764894039336499774	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-test	9f92e8f5fa12fa37
+1287	1291	1764894039341499781	CMakeFiles/pybind11-populate-complete	e084c4ea6d0368e7
+1287	1291	1764894039341499781	pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-done	e084c4ea6d0368e7
+1287	1291	1764894039341499781	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/CMakeFiles/pybind11-populate-complete	e084c4ea6d0368e7
+1287	1291	1764894039341499781	/home/runner/work/iDAWi/iDAWi/build/_deps/pybind11-subbuild/pybind11-populate-prefix/src/pybind11-populate-stamp/pybind11-populate-done	e084c4ea6d0368e7

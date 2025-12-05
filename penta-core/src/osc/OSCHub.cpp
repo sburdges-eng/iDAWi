@@ -179,7 +179,7 @@ void OSCHub::dispatchMessage(const OSCMessage& message) {
     std::lock_guard<std::mutex> lock(callbackMutex_);
 
     for (const auto& entry : callbacks_) {
-        if (matchPattern(entry.pattern, message.address)) {
+        if (matchPattern(entry.pattern, message.getAddress())) {
             if (entry.callback) {
                 entry.callback(message);
             }

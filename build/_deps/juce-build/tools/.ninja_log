@@ -1,0 +1,6 @@
+# ninja log v7
+1	35	1764894067891538309	/home/runner/work/iDAWi/iDAWi/build/_deps/juce-build/tools/CMakeFiles/cmake.verify_globs	367652ae038881fc
+38	4807	1764894067928538359	extras/Build/juceaide/CMakeFiles/juceaide.dir/__/__/__/modules/juce_events/juce_events.cpp.o	213348e2ce38ee00
+35	4837	1764894067925538355	extras/Build/juceaide/CMakeFiles/juceaide.dir/Main.cpp.o	c3e2b930a862b47f
+36	4839	1764894067926538356	extras/Build/juceaide/CMakeFiles/juceaide.dir/__/juce_build_tools/juce_build_tools.cpp.o	51034da590f8ad29
+39	10257	1764894067929538361	extras/Build/juceaide/CMakeFiles/juceaide.dir/__/__/__/modules/juce_core/juce_core.cpp.o	b42581ce6f31253c

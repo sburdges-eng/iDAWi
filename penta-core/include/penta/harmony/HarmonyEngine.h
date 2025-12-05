@@ -21,6 +21,7 @@ public:
         bool enableVoiceLeading;
         bool enableScaleDetection;
         float confidenceThreshold;
+        size_t historySize;
         
         Config()
             : sampleRate(kDefaultSampleRate)
@@ -28,6 +29,7 @@ public:
             , enableVoiceLeading(true)
             , enableScaleDetection(true)
             , confidenceThreshold(0.5f)
+            , historySize(16)
         {}
     };
     
@@ -72,6 +74,9 @@ private:
     
     Chord currentChord_;
     Scale currentScale_;
+    
+    std::vector<Chord> chordHistory_;
+    std::vector<Scale> scaleHistory_;
     
     std::array<uint8_t, 128> activeNotes_; // Note velocity (0 = off)
     std::array<bool, 12> pitchClassSet_;   // Current pitch classes
