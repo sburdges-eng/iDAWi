@@ -112,7 +112,7 @@ struct OSCServer::SocketImpl {
 
 // Helper to parse OSC message from buffer
 static bool parseOSCMessage(const uint8_t* data, size_t size, OSCMessage& msg) {
-    if (size < 4) return false;
+    if (!data || size < 4) return false;
     
     // Find null terminator for address
     size_t addrEnd = 0;

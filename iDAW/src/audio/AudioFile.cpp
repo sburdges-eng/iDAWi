@@ -193,7 +193,14 @@ bool AudioFile::convertSampleRate(SampleRate targetRate) {
             size_t srcIdx = static_cast<size_t>(srcPos);
             double frac = srcPos - srcIdx;
             
-            // Clamp to valid range
+            // Clamp to valid range with underflow protection
+            if (info_.numSamples < 2) {
+                // If only 0 or 1 samples, just use first sample or zero
+                size_t srcOffset0 = (info_.numSamples > 0) ? ch : 0;
+                newData[i * info_.numChannels + ch] = (info_.numSamples > 0) ? data_[srcOffset0] : 0.0f;
+                continue;
+            }
+            
             if (srcIdx >= info_.numSamples - 1) {
                 srcIdx = info_.numSamples - 2;
                 frac = 1.0;

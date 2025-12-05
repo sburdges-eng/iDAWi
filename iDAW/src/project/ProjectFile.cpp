@@ -151,6 +151,9 @@ bool ProjectFile::fromJSON(const std::string& json) {
             valueStart++;
         }
         
+        // Validate bounds
+        if (valueStart >= json.size()) return 0.0;
+        
         // Parse number
         try {
             return std::stod(json.substr(valueStart));

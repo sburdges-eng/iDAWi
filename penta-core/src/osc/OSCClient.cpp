@@ -160,19 +160,19 @@ bool OSCClient::send(const OSCMessage& message) noexcept {
         const auto& arg = message.getArgument(i);
         if (std::holds_alternative<int32_t>(arg)) {
             int32_t val = std::get<int32_t>(arg);
-            // Convert to network byte order (big endian)
+            // Convert to network byte order (big endian) using safe byte copy
             uint32_t netVal = htonl(static_cast<uint32_t>(val));
-            buffer.insert(buffer.end(), 
-                         reinterpret_cast<uint8_t*>(&netVal),
-                         reinterpret_cast<uint8_t*>(&netVal) + 4);
+            uint8_t bytes[4];
+            memcpy(bytes, &netVal, 4);
+            buffer.insert(buffer.end(), bytes, bytes + 4);
         } else if (std::holds_alternative<float>(arg)) {
             float val = std::get<float>(arg);
             uint32_t intVal;
             memcpy(&intVal, &val, sizeof(float));
             uint32_t netVal = htonl(intVal);
-            buffer.insert(buffer.end(),
-                         reinterpret_cast<uint8_t*>(&netVal),
-                         reinterpret_cast<uint8_t*>(&netVal) + 4);
+            uint8_t bytes[4];
+            memcpy(bytes, &netVal, 4);
+            buffer.insert(buffer.end(), bytes, bytes + 4);
         } else if (std::holds_alternative<std::string>(arg)) {
             const std::string& str = std::get<std::string>(arg);
             buffer.insert(buffer.end(), str.begin(), str.end());

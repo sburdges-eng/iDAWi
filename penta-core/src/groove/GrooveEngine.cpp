@@ -63,7 +63,8 @@ void GrooveEngine::processAudio(const float* buffer, size_t frames) noexcept {
 }
 
 uint64_t GrooveEngine::quantizeToGrid(uint64_t timestamp) const noexcept {
-    if (!config_.enableQuantization || analysis_.currentTempo <= 0.0f) {
+    // Guard against invalid tempo values (including very small values)
+    if (!config_.enableQuantization || analysis_.currentTempo < 1.0f) {
         return timestamp;
     }
     
@@ -83,7 +84,8 @@ uint64_t GrooveEngine::quantizeToGrid(uint64_t timestamp) const noexcept {
 }
 
 uint64_t GrooveEngine::applySwing(uint64_t position) const noexcept {
-    if (analysis_.swing <= 0.001f || analysis_.currentTempo <= 0.0f) {
+    // Guard against invalid tempo values
+    if (analysis_.swing <= 0.001f || analysis_.currentTempo < 1.0f) {
         return position;
     }
     
