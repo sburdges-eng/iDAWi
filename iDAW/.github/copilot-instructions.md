@@ -399,6 +399,231 @@ When generating code:
 
 ---
 
+## Quick Commands for iDAW
+
+Project-specific prompts for common development tasks. Copy and customize as needed.
+
+### TypeScript Component Creation
+
+```
+/create-component [COMPONENT_NAME]
+
+Create a new React component for iDAW with:
+- TypeScript with strict types
+- Use Zustand store from `src/store/useStore.ts` for state management
+- WebSocket/IPC communication with 16ms debounce for backend calls
+- Tailwind CSS using core utilities only (no custom classes)
+- Framer Motion for animations (if needed)
+- Place in `src/components/SideA/` (audio) or `src/components/SideB/` (emotion)
+
+Example structure:
+```tsx
+import { useStore } from '../../store/useStore';
+import { motion } from 'framer-motion';
+
+interface Props {
+  // Props with strict types
+}
+
+export const [COMPONENT_NAME]: React.FC<Props> = (props) => {
+  const { /* destructure needed state */ } = useStore();
+  // Component logic
+  return <div className="/* Tailwind classes */">...</div>;
+};
+```
+```
+
+### Zustand Slice Pattern
+
+```
+/create-slice [SLICE_NAME]
+
+Add a new slice to the Zustand store in `src/store/useStore.ts`:
+
+1. Define TypeScript interface for the slice state
+2. Add state properties with defaults
+3. Add action methods following existing patterns
+4. Include in the persist partialize if needed
+
+Pattern:
+```typescript
+// Types
+export interface [SLICE_NAME]State {
+  // State properties
+}
+
+// In AppState interface, add:
+// [sliceName]: [SLICE_NAME]State;
+// update[SliceName]: (updates: Partial<[SLICE_NAME]State>) => void;
+
+// In create():
+[sliceName]: { /* defaults */ },
+update[SliceName]: (updates) => set((state) => ({
+  [sliceName]: { ...state.[sliceName], ...updates },
+})),
+```
+```
+
+### Emotion Mapping Commands
+
+```
+/add-emotion [EMOTION_NAME]
+
+Add emotion mapping to the project:
+
+1. Update Python thesaurus (`emotion_thesaurus.py`):
+   - Add to BASE_EMOTIONS if new base emotion
+   - Add sub_emotions and sub_sub_emotions with intensity tiers
+   - Include synonyms for each intensity tier (1-6)
+
+2. Update TypeScript frontend (`src/store/useStore.ts`):
+   - Add to SongIntent interface if extending core emotions
+   - Update coreEmotion/subEmotion defaults if needed
+
+3. Emotion characteristics to define:
+   - valence: negative/mixed/positive
+   - arousal_range: [low, high] from 0.0 to 1.0
+   - tempo_range: BPM range
+   - mode_weights: minor/dorian/phrygian/major/lydian/mixolydian
+   - timing_feel: ahead/on/behind
+   - dissonance_level: percentage 0-100%
+```
+
+```
+/map-emotion-to-params [EMOTION]
+
+Get musical parameters for an emotion:
+- Reference `data/emotional_mapping.py` for emotion → parameter mapping
+- Check `DAiW_Cheat_Sheet.md` for quick lookup table
+- Apply the Three-Phase Intent Schema (Phase 0 → 1 → 2)
+```
+
+### Debugging Commands
+
+```
+/debug-audio
+
+Check audio engine issues:
+1. Verify RT-safety: No allocations in audio callbacks
+2. Check for lock-free communication between Side A and Side B
+3. Verify `isAudioThread()` assertions
+4. Check ring buffer flow: Side B → Side A
+
+Files to inspect:
+- `iDAW_Core/` for JUCE plugin issues
+- `python/penta_core/` for Python bindings
+- `external/readerwriterqueue/` for lock-free queue issues
+```
+
+```
+/debug-state
+
+Check Zustand state issues:
+1. Verify state shape in `src/store/useStore.ts`
+2. Check persist configuration for local storage
+3. Verify selector optimization (avoid re-renders)
+4. Check action immutability patterns
+
+Console debug:
+```typescript
+// Add to component for state debugging
+const state = useStore.getState();
+console.log('Current state:', state);
+```
+```
+
+```
+/debug-ipc
+
+Check Tauri IPC communication:
+1. Verify command definitions in `src-tauri/src/`
+2. Check invoke calls use correct command names
+3. Verify payload serialization matches Rust types
+4. Check 16ms debounce is applied for frequent updates
+```
+
+### Build & Test Commands
+
+```
+/build-check
+
+Run full build verification:
+```bash
+# TypeScript check
+cd iDAW/iDAWi && npm run type-check
+
+# Lint check
+cd iDAW/iDAWi && npm run lint
+
+# Full build
+cd iDAW/iDAWi && npm run build
+
+# Python tests
+pytest tests_music-brain/ -v
+
+# C++ build (if available)
+mkdir -p build && cd build && cmake .. && make
+```
+```
+
+```
+/test-emotion
+
+Test emotion-related functionality:
+```bash
+# From iDAW directory:
+cd iDAW
+
+# Python emotion thesaurus
+python -c "from emotion_thesaurus import EmotionThesaurus; t = EmotionThesaurus(); print(t.stats())"
+
+# Test synonym lookup
+python -c "from emotion_thesaurus import lookup; print(lookup('melancholy'))"
+
+# Test music_brain CLI (requires pip install -e .)
+daiw intent suggest grief
+daiw diagnose "F-C-Am-Dm"
+```
+```
+
+### Rule-Breaking Prompts
+
+```
+/suggest-rule-break [EMOTION]
+
+Suggest rule-breaking options for emotional effect:
+
+Reference mapping:
+- bittersweet → HARMONY_ModalInterchange (iv chord, ♭VII)
+- longing/grief → STRUCTURE_NonResolution (avoid tonic)
+- power → HARMONY_ParallelMotion (parallel fifths)
+- anxiety → RHYTHM_ConstantDisplacement (syncopation)
+- vulnerability → PRODUCTION_PitchImperfection (slight detune)
+- dissociation → ARRANGEMENT_BuriedVocals (dry, distant)
+
+ALWAYS require emotional justification before implementing.
+```
+
+### MCP Server Commands
+
+```
+/mcp-status
+
+Check MCP server status:
+```bash
+# Workstation status
+python -m mcp_workstation status
+
+# TODO server
+python -m mcp_todo.cli summary
+
+# Penta-Core swarm
+python -m penta_core_music-brain.server --help
+```
+```
+
+---
+
 *"The audience doesn't hear 'borrowed from Dorian.' They hear 'that part made me cry.'"*
 
 End of Copilot Instructions.
