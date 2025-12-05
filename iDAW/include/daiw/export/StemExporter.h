@@ -110,13 +110,14 @@ public:
     }
 
     /**
-     * @brief Render MIDI track to audio (stub)
+     * @brief Render MIDI track to audio
      * @param track MIDI track to render
      * @param durationSeconds Duration to render
      * @param sampleRate Output sample rate
      * @return Rendered audio file
      *
-     * TODO: Implement MIDI rendering (requires synth/sampler)
+     * Uses additive sine wave synthesis with ADSR envelope.
+     * For production: integrate with a full sampler/synth engine.
      */
     static audio::AudioFile renderMidiTrack(
         const project::Track& track,

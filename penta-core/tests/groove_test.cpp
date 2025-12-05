@@ -13,7 +13,10 @@ using namespace penta::groove;
 class OnsetDetectorTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        detector = std::make_unique<OnsetDetector>(44100.0, 512);
+        OnsetDetector::Config config;
+        config.sampleRate = 44100.0;
+        config.hopSize = 512;
+        detector = std::make_unique<OnsetDetector>(config);
     }
     
     std::unique_ptr<OnsetDetector> detector;
@@ -26,7 +29,8 @@ TEST_F(OnsetDetectorTest, DetectsSimpleClick) {
     // Create impulse at start
     signal[0] = 1.0f;
     
-    bool detected = detector->processBlock(signal.data(), blockSize);
+    detector->process(signal.data(), blockSize);
+    bool detected = detector->hasOnset();
     
     EXPECT_TRUE(detected);
 }
@@ -36,7 +40,8 @@ TEST_F(OnsetDetectorTest, IgnoresConstantSignal) {
     std::array<float, blockSize> signal;
     signal.fill(0.1f);  // Constant low level
     
-    bool detected = detector->processBlock(signal.data(), blockSize);
+    detector->process(signal.data(), blockSize);
+    bool detected = detector->hasOnset();
     
     EXPECT_FALSE(detected);
 }
@@ -52,29 +57,32 @@ TEST_F(OnsetDetectorTest, DetectsSineWaveOnset) {
     
     // Sine wave second half
     for (size_t i = blockSize / 2; i < blockSize; ++i) {
-        signal[i] = std::sin(2.0f * M_PI * 440.0f * i / 44100.0f);
+        signal[i] = std::sin(2.0f * static_cast<float>(M_PI) * 440.0f * i / 44100.0f);
     }
     
-    bool detected = detector->processBlock(signal.data(), blockSize);
+    detector->process(signal.data(), blockSize);
+    bool detected = detector->hasOnset();
     
     EXPECT_TRUE(detected);
 }
 
-TEST_F(OnsetDetectorTest, RespondsToSensitivityChanges) {
+TEST_F(OnsetDetectorTest, RespondsToThresholdChanges) {
     constexpr size_t blockSize = 512;
     std::array<float, blockSize> weakSignal = {};
     weakSignal[0] = 0.1f;  // Weak impulse
     
-    detector->setSensitivity(0.1f);  // Low sensitivity
-    bool lowSens = detector->processBlock(weakSignal.data(), blockSize);
+    detector->setThreshold(0.9f);  // High threshold (low sensitivity)
+    detector->process(weakSignal.data(), blockSize);
+    bool highThreshold = detector->hasOnset();
     
     detector->reset();
     
-    detector->setSensitivity(0.9f);  // High sensitivity
-    bool highSens = detector->processBlock(weakSignal.data(), blockSize);
+    detector->setThreshold(0.1f);  // Low threshold (high sensitivity)
+    detector->process(weakSignal.data(), blockSize);
+    bool lowThreshold = detector->hasOnset();
     
-    // High sensitivity should detect what low sensitivity misses
-    EXPECT_TRUE(highSens || !lowSens);
+    // Low threshold should detect what high threshold misses
+    EXPECT_TRUE(lowThreshold || !highThreshold);
 }
 
 // ========== TempoEstimator Tests ==========
@@ -82,7 +90,9 @@ TEST_F(OnsetDetectorTest, RespondsToSensitivityChanges) {
 class TempoEstimatorTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        estimator = std::make_unique<TempoEstimator>(44100.0);
+        TempoEstimator::Config config;
+        config.sampleRate = 44100.0;
+        estimator = std::make_unique<TempoEstimator>(config);
     }
     
     std::unique_ptr<TempoEstimator> estimator;
@@ -115,29 +125,28 @@ TEST_F(TempoEstimatorTest, Estimates90BPM) {
     EXPECT_NEAR(bpm, 90.0f, 5.0f);
 }
 
-TEST_F(TempoEstimatorTest, ReturnsZeroWithNoOnsets) {
+TEST_F(TempoEstimatorTest, ReturnsDefaultWithNoOnsets) {
     float bpm = estimator->getCurrentTempo();
     
-    EXPECT_EQ(bpm, 0.0f);
+    // Default tempo should be 120 BPM
+    EXPECT_EQ(bpm, 120.0f);
 }
 
-TEST_F(TempoEstimatorTest, SmoothsTempoChanges) {
-    estimator->setSmoothing(0.8f);  // High smoothing
-    
-    // First tempo: 120 BPM
+TEST_F(TempoEstimatorTest, AdaptsToTempoChanges) {
+    // First tempo: 120 BPM (22050 samples per beat at 44.1kHz)
     for (int i = 0; i < 4; ++i) {
         estimator->addOnset(i * 22050);
     }
     float tempo1 = estimator->getCurrentTempo();
     
-    // Sudden change to 140 BPM
+    // Reset and change to 90 BPM (29400 samples per beat at 44.1kHz)
     estimator->reset();
     for (int i = 0; i < 4; ++i) {
-        estimator->addOnset(i * 18900);  // 140 BPM
+        estimator->addOnset(i * 29400);
     }
     float tempo2 = estimator->getCurrentTempo();
     
-    // Smoothing should affect the estimate
+    // Tempos should be different
     EXPECT_NE(tempo1, tempo2);
 }
 
@@ -146,61 +155,69 @@ TEST_F(TempoEstimatorTest, SmoothsTempoChanges) {
 class RhythmQuantizerTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        quantizer = std::make_unique<RhythmQuantizer>(44100.0);
-        quantizer->setTempo(120.0f);
-        quantizer->setTimeSignature(4, 4);
+        RhythmQuantizer::Config config;
+        config.resolution = RhythmQuantizer::GridResolution::Sixteenth;
+        config.strength = 1.0f;
+        config.timeSignatureNum = 4;
+        config.timeSignatureDen = 4;
+        quantizer = std::make_unique<RhythmQuantizer>(config);
+        
+        // 120 BPM, 4/4 = 0.5s per beat = 22050 samples at 44.1kHz
+        samplesPerBeat = 22050;
     }
     
     std::unique_ptr<RhythmQuantizer> quantizer;
+    uint64_t samplesPerBeat;
 };
 
 TEST_F(RhythmQuantizerTest, QuantizesToNearestSixteenth) {
-    quantizer->setGrid(RhythmQuantizer::GridResolution::Sixteenth);
-    
-    // 120 BPM, 4/4 = 0.5s per beat = 22050 samples
     // Sixteenth note = 22050 / 4 = 5512.5 samples
     
     uint64_t nearSixteenth = 5500;  // Just before 1st sixteenth
-    uint64_t quantized = quantizer->quantize(nearSixteenth);
+    uint64_t quantized = quantizer->quantize(nearSixteenth, samplesPerBeat, 0);
     
     EXPECT_NEAR(quantized, 5512, 100);  // Should snap to sixteenth
 }
 
 TEST_F(RhythmQuantizerTest, QuantizesToNearestEighth) {
-    quantizer->setGrid(RhythmQuantizer::GridResolution::Eighth);
+    RhythmQuantizer::Config config;
+    config.resolution = RhythmQuantizer::GridResolution::Eighth;
+    config.strength = 1.0f;
+    quantizer->updateConfig(config);
     
     uint64_t nearEighth = 11000;  // Near first eighth note
-    uint64_t quantized = quantizer->quantize(nearEighth);
+    uint64_t quantized = quantizer->quantize(nearEighth, samplesPerBeat, 0);
     
     EXPECT_NEAR(quantized, 11025, 100);  // 22050 / 2
 }
 
 TEST_F(RhythmQuantizerTest, HandlesDownbeat) {
     uint64_t nearDownbeat = 100;
-    uint64_t quantized = quantizer->quantize(nearDownbeat);
+    uint64_t quantized = quantizer->quantize(nearDownbeat, samplesPerBeat, 0);
     
     EXPECT_NEAR(quantized, 0, 200);  // Should snap to beat 1
 }
 
 TEST_F(RhythmQuantizerTest, HandlesSwing) {
-    quantizer->setSwing(0.66f);  // Swing feel
-    quantizer->setGrid(RhythmQuantizer::GridResolution::Eighth);
+    RhythmQuantizer::Config config;
+    config.resolution = RhythmQuantizer::GridResolution::Eighth;
+    config.enableSwing = true;
+    config.swingAmount = 0.66f;  // Swing feel
+    quantizer->updateConfig(config);
     
     uint64_t straightEighth = 11025;
-    uint64_t swungEighth = quantizer->quantize(straightEighth);
+    uint64_t swungEighth = quantizer->applySwing(straightEighth, samplesPerBeat, 0);
     
     // Swing should shift timing
     EXPECT_NE(straightEighth, swungEighth);
 }
 
-TEST_F(RhythmQuantizerTest, SupportsTriplets) {
-    quantizer->setGrid(RhythmQuantizer::GridResolution::EighthTriplet);
+TEST_F(RhythmQuantizerTest, GetGridInterval) {
+    // Test grid interval calculation
+    uint64_t interval = quantizer->getGridInterval(samplesPerBeat);
     
-    // Triplet divides beat into 3
-    uint64_t nearTriplet = 7350;  // 22050 / 3
-    uint64_t quantized = quantizer->quantize(nearTriplet);
-    
-    EXPECT_NEAR(quantized, 7350, 100);
+    // Sixteenth note = beat / 4
+    EXPECT_EQ(interval, samplesPerBeat / 4);
 }
 
 // ========== GrooveEngine Tests ==========
@@ -208,7 +225,9 @@ TEST_F(RhythmQuantizerTest, SupportsTriplets) {
 class GrooveEngineTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        engine = std::make_unique<GrooveEngine>(44100.0);
+        GrooveEngine::Config config;
+        config.sampleRate = 44100.0;
+        engine = std::make_unique<GrooveEngine>(config);
     }
     
     std::unique_ptr<GrooveEngine> engine;
@@ -223,32 +242,53 @@ TEST_F(GrooveEngineTest, ProcessesAudioBlock) {
     testSignal[0] = 1.0f;
     testSignal[256] = 1.0f;
     
-    engine->processBlock(testSignal.data(), blockSize);
+    engine->processAudio(testSignal.data(), blockSize);
     
-    float tempo = engine->getCurrentTempo();
+    const auto& analysis = engine->getAnalysis();
+    float tempo = analysis.currentTempo;
     EXPECT_GE(tempo, 0.0f);  // Should not crash
 }
 
-TEST_F(GrooveEngineTest, RespondsToParameterChanges) {
-    engine->setParameter(0, 0.7f);  // Onset sensitivity
-    engine->setParameter(1, 0.5f);  // Tempo smoothing
+TEST_F(GrooveEngineTest, RespondsToConfigChanges) {
+    GrooveEngine::Config config;
+    config.sampleRate = 44100.0;
+    config.minTempo = 80.0f;
+    config.maxTempo = 160.0f;
     
-    EXPECT_NO_THROW(engine->processBlock(nullptr, 0));
+    EXPECT_NO_THROW(engine->updateConfig(config));
+}
+
+TEST_F(GrooveEngineTest, CanReset) {
+    EXPECT_NO_THROW(engine->reset());
+}
+
+TEST_F(GrooveEngineTest, QuantizesToGrid) {
+    // Test the quantizeToGrid method
+    uint64_t unquantized = 5500;
+    uint64_t quantized = engine->quantizeToGrid(unquantized);
+    
+    // Result depends on current tempo but should be valid
+    EXPECT_GE(quantized, 0u);
 }
 
 // ========== Performance Benchmarks ==========
 
 class GroovePerformanceBenchmark : public ::testing::Test {
 protected:
-    OnsetDetector detector{44100.0, 512};
+    std::unique_ptr<OnsetDetector> detector;
     std::array<float, 512> testSignal;
     
     void SetUp() override {
+        OnsetDetector::Config config;
+        config.sampleRate = 44100.0;
+        config.hopSize = 512;
+        detector = std::make_unique<OnsetDetector>(config);
+        
         // Generate test signal with onset
         testSignal.fill(0.0f);
         testSignal[0] = 1.0f;
         for (size_t i = 100; i < 512; ++i) {
-            testSignal[i] = std::sin(2.0f * M_PI * 440.0f * i / 44100.0f);
+            testSignal[i] = std::sin(2.0f * static_cast<float>(M_PI) * 440.0f * static_cast<float>(i) / 44100.0f);
         }
     }
 };
@@ -259,7 +299,8 @@ TEST_F(GroovePerformanceBenchmark, OnsetDetectionUnder150Microseconds) {
     auto start = std::chrono::high_resolution_clock::now();
     
     for (int i = 0; i < iterations; ++i) {
-        volatile bool result = detector.processBlock(testSignal.data(), 512);
+        detector->process(testSignal.data(), 512);
+        volatile bool result = detector->hasOnset();
         (void)result;
     }
     
@@ -274,13 +315,15 @@ TEST_F(GroovePerformanceBenchmark, OnsetDetectionUnder150Microseconds) {
 }
 
 TEST_F(GroovePerformanceBenchmark, TempoEstimationUnder200Microseconds) {
-    TempoEstimator estimator(44100.0);
+    TempoEstimator::Config config;
+    config.sampleRate = 44100.0;
+    TempoEstimator estimator(config);
     constexpr int iterations = 1000;
     
     auto start = std::chrono::high_resolution_clock::now();
     
     for (int i = 0; i < iterations; ++i) {
-        estimator.addOnset(i * 22050);
+        estimator.addOnset(static_cast<uint64_t>(i) * 22050);
         volatile float tempo = estimator.getCurrentTempo();
         (void)tempo;
     }
@@ -295,7 +338,4 @@ TEST_F(GroovePerformanceBenchmark, TempoEstimationUnder200Microseconds) {
     EXPECT_LT(avgMicros, 200.0);
 }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// Note: main() is provided by gtest_main

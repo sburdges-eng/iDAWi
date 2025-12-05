@@ -144,17 +144,96 @@ audio::AudioFile StemExporter::renderMidiTrack(
     double durationSeconds,
     SampleRate sampleRate) {
     
-    // TODO: Implement MIDI rendering
-    // This requires a synth or sampler engine
-    // For now, generate a test tone if there are MIDI events
+    // MIDI rendering implementation
+    // Generates audio from MIDI events using a basic sine wave synthesizer
+    // For production: integrate with a full sampler/synth engine
     
-    if (track.midiSequence.size() > 0) {
-        // Generate a placeholder sine wave
-        return audio::AudioFile::generateSineWave(440.0f, durationSeconds, sampleRate, 0.3f);
+    if (track.midiSequence.size() == 0) {
+        // Return empty audio file if no MIDI events
+        return audio::AudioFile();
     }
     
-    // Return empty audio file
-    return audio::AudioFile();
+    size_t numSamples = static_cast<size_t>(durationSeconds * sampleRate);
+    std::vector<audio::Sample> audioData(numSamples, 0.0f);
+    
+    // Simple additive synthesis: each MIDI note generates a sine wave
+    // with exponential amplitude envelope
+    const float baseAmplitude = 0.2f;
+    const double attackTime = 0.01;    // 10ms attack
+    const double releaseTime = 0.3;    // 300ms release
+    
+    const auto& messages = track.midiSequence.getMessages();
+    
+    for (const auto& msg : messages) {
+        if (!msg.isNoteOn()) {
+            continue;
+        }
+        
+        uint8_t pitch = msg.getNoteNumber();
+        uint8_t velocity = msg.getVelocity();
+        uint64_t startSample = msg.getTimestamp();
+        
+        // Calculate frequency from MIDI pitch (A4 = 440 Hz, MIDI note 69)
+        float frequency = 440.0f * std::pow(2.0f, (static_cast<float>(pitch) - 69.0f) / 12.0f);
+        float amplitude = baseAmplitude * (velocity / 127.0f);
+        
+        // Find note off to determine duration
+        uint64_t noteDuration = sampleRate / 2;  // Default 0.5 second if no note off
+        for (const auto& offMsg : messages) {
+            if (offMsg.isNoteOff() &&
+                offMsg.getNoteNumber() == pitch &&
+                offMsg.getTimestamp() > startSample) {
+                noteDuration = offMsg.getTimestamp() - startSample;
+                break;
+            }
+        }
+        
+        // Render sine wave with envelope
+        size_t endSample = std::min(
+            static_cast<size_t>(startSample + noteDuration + static_cast<uint64_t>(releaseTime * sampleRate)),
+            numSamples
+        );
+        
+        float angularFreq = 2.0f * static_cast<float>(M_PI) * frequency;
+        
+        for (size_t i = startSample; i < endSample && i < numSamples; ++i) {
+            float t = static_cast<float>(i - startSample) / static_cast<float>(sampleRate);
+            
+            // Simple ADSR-like envelope
+            float envelope = 1.0f;
+            if (t < attackTime) {
+                // Attack phase
+                envelope = static_cast<float>(t / attackTime);
+            } else if (i >= startSample + noteDuration) {
+                // Release phase
+                float releaseT = static_cast<float>(i - startSample - noteDuration) / static_cast<float>(sampleRate);
+                envelope = std::exp(-releaseT / static_cast<float>(releaseTime) * 5.0f);
+            }
+            
+            // Generate sine wave
+            float sample = amplitude * envelope * std::sin(angularFreq * t);
+            
+            // Mix into output (additive)
+            audioData[i] += sample;
+        }
+    }
+    
+    // Normalize if clipping
+    float maxSample = 0.0f;
+    for (const auto& sample : audioData) {
+        maxSample = std::max(maxSample, std::abs(sample));
+    }
+    
+    if (maxSample > 0.95f) {
+        float gain = 0.9f / maxSample;
+        for (auto& sample : audioData) {
+            sample *= gain;
+        }
+    }
+    
+    audio::AudioFile result;
+    result.setData(audioData, 1, sampleRate);
+    return result;
 }
 
 void StemExporter::normalizeAudio(audio::AudioFile& audio, float targetLevel) {

@@ -167,10 +167,60 @@ void AudioFile::setChannelData(const std::vector<std::vector<Sample>>& channels,
 }
 
 bool AudioFile::convertSampleRate(SampleRate targetRate) {
-    // TODO: Implement sample rate conversion
-    // Options: libsamplerate, libresample, or simple linear interpolation
-    (void)targetRate;
-    return false;  // Not implemented
+    if (targetRate == info_.sampleRate || data_.empty()) {
+        return true;  // No conversion needed
+    }
+    
+    if (targetRate == 0 || info_.sampleRate == 0) {
+        return false;  // Invalid sample rates
+    }
+    
+    // Calculate conversion ratio
+    double ratio = static_cast<double>(targetRate) / static_cast<double>(info_.sampleRate);
+    
+    // Calculate new size
+    size_t newNumSamples = static_cast<size_t>(info_.numSamples * ratio);
+    size_t newTotalSamples = newNumSamples * info_.numChannels;
+    
+    std::vector<Sample> newData(newTotalSamples);
+    
+    // Linear interpolation resampling
+    // For production: use libsamplerate for higher quality sinc interpolation
+    for (uint32_t ch = 0; ch < info_.numChannels; ++ch) {
+        for (size_t i = 0; i < newNumSamples; ++i) {
+            // Calculate source position
+            double srcPos = static_cast<double>(i) / ratio;
+            size_t srcIdx = static_cast<size_t>(srcPos);
+            double frac = srcPos - srcIdx;
+            
+            // Clamp to valid range
+            if (srcIdx >= info_.numSamples - 1) {
+                srcIdx = info_.numSamples - 2;
+                frac = 1.0;
+            }
+            
+            // Get source samples (interleaved format)
+            size_t srcOffset0 = srcIdx * info_.numChannels + ch;
+            size_t srcOffset1 = (srcIdx + 1) * info_.numChannels + ch;
+            
+            Sample s0 = data_[srcOffset0];
+            Sample s1 = (srcOffset1 < data_.size()) ? data_[srcOffset1] : s0;
+            
+            // Linear interpolation
+            Sample interpolated = static_cast<Sample>(s0 * (1.0 - frac) + s1 * frac);
+            
+            // Store in new data (interleaved format)
+            newData[i * info_.numChannels + ch] = interpolated;
+        }
+    }
+    
+    // Update data and info
+    data_ = std::move(newData);
+    info_.sampleRate = targetRate;
+    info_.numSamples = newNumSamples;
+    info_.durationSeconds = static_cast<double>(newNumSamples) / targetRate;
+    
+    return true;
 }
 
 AudioFile AudioFile::generateSineWave(float frequency,

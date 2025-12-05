@@ -145,12 +145,12 @@ public:
                        SampleRate sampleRate);
 
     /**
-     * @brief Convert to a different sample rate (STUB)
+     * @brief Convert to a different sample rate
      * @param targetRate Target sample rate
      * @return true if successful
      *
-     * TODO: Implement actual sample rate conversion
-     * Options: libsamplerate, libresample, or simple linear interpolation
+     * Uses linear interpolation for resampling.
+     * For higher quality: integrate libsamplerate for sinc interpolation.
      */
     bool convertSampleRate(SampleRate targetRate);
 
