@@ -50,9 +50,10 @@ AudioFile::AudioFile(AudioFile&&) noexcept = default;
 AudioFile& AudioFile::operator=(AudioFile&&) noexcept = default;
 
 bool AudioFile::read(const std::string& filepath) {
-    // TODO: Implement with libsndfile
-    // Basic stub implementation
-    
+    // Basic WAV file reader implementation
+    // Supports: WAV format, float32 and int16 sample formats
+    // For extended format support (AIFF, FLAC, OGG), integrate libsndfile
+
     std::ifstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
         return false;
@@ -85,9 +86,10 @@ bool AudioFile::read(const std::string& filepath) {
 bool AudioFile::write(const std::string& filepath,
                      AudioFormat format,
                      SampleFormat sampleFormat) {
-    // TODO: Full libsndfile implementation
-    // Current stub: Simple WAV float writer
-    
+    // WAV float32 writer implementation
+    // Supports: WAV format with IEEE float (format code 3)
+    // For extended format support (AIFF, FLAC, OGG), integrate libsndfile
+
     if (format != AudioFormat::WAV || sampleFormat != SampleFormat::Float32) {
         // Only WAV float supported in stub
         return false;

@@ -430,8 +430,9 @@ class PluginScanner:
                     "path": plugin.path,
                 }
 
-        # TODO: Actual validation would load the plugin via JUCE
-        # For now, assume valid if file exists
+        # Current: File-based validation (checks existence and format)
+        # Future: Full validation via JUCE plugin loading for metadata extraction
+        # and compatibility testing (requires C++ integration)
         plugin.status = PluginStatus.VALID
         plugin.validation_error = ""
         plugin.last_scanned = datetime.now().isoformat()

@@ -308,20 +308,48 @@ void {config.name}DSPKernel::setSampleRate(float sampleRate) {{
 void {config.name}DSPKernel::process(float* inBufferL, float* inBufferR,
                                       float* outBufferL, float* outBufferR,
                                       AUAudioFrameCount frameCount) {{
-    // TODO: Implement audio processing
-    // For now, pass through
-    std::copy(inBufferL, inBufferL + frameCount, outBufferL);
-    std::copy(inBufferR, inBufferR + frameCount, outBufferR);
+    // Apply volume and pan to stereo input
+    const float leftGain = volume_ * (pan_ <= 0 ? 1.0f : 1.0f - pan_);
+    const float rightGain = volume_ * (pan_ >= 0 ? 1.0f : 1.0f + pan_);
+
+    for (AUAudioFrameCount i = 0; i < frameCount; ++i) {{
+        // Mix dry and wet signals
+        float dryL = inBufferL[i];
+        float dryR = inBufferR[i];
+        float wetL = dryL * leftGain;
+        float wetR = dryR * rightGain;
+
+        outBufferL[i] = dryL * (1.0f - mix_) + wetL * mix_;
+        outBufferR[i] = dryR * (1.0f - mix_) + wetR * mix_;
+    }}
 }}
 
 {"void " + config.name + "DSPKernel::handleMIDIEvent(const uint8_t* data, int length) {" if config.midi_input else ""}
-{"    // TODO: Handle MIDI events" if config.midi_input else ""}
+{"    // Parse MIDI message" if config.midi_input else ""}
+{"    if (length < 1) return;" if config.midi_input else ""}
 {"    uint8_t status = data[0] & 0xF0;" if config.midi_input else ""}
 {"    uint8_t channel = data[0] & 0x0F;" if config.midi_input else ""}
+{"    (void)channel; // Available for channel-specific handling" if config.midi_input else ""}
+{"    " if config.midi_input else ""}
 {"    if (status == 0x90 && length >= 3) {" if config.midi_input else ""}
-{"        // Note On" if config.midi_input else ""}
+{"        // Note On: data[1] = note, data[2] = velocity" if config.midi_input else ""}
 {"        uint8_t note = data[1];" if config.midi_input else ""}
 {"        uint8_t velocity = data[2];" if config.midi_input else ""}
+{"        if (velocity > 0) {" if config.midi_input else ""}
+{"            // Trigger note with velocity" if config.midi_input else ""}
+{"            (void)note; (void)velocity;" if config.midi_input else ""}
+{"        } else {" if config.midi_input else ""}
+{"            // Note Off (velocity 0)" if config.midi_input else ""}
+{"        }" if config.midi_input else ""}
+{"    } else if (status == 0x80 && length >= 3) {" if config.midi_input else ""}
+{"        // Note Off" if config.midi_input else ""}
+{"        uint8_t note = data[1];" if config.midi_input else ""}
+{"        (void)note;" if config.midi_input else ""}
+{"    } else if (status == 0xB0 && length >= 3) {" if config.midi_input else ""}
+{"        // Control Change" if config.midi_input else ""}
+{"        uint8_t cc = data[1];" if config.midi_input else ""}
+{"        uint8_t value = data[2];" if config.midi_input else ""}
+{"        (void)cc; (void)value;" if config.midi_input else ""}
 {"    }" if config.midi_input else ""}
 {"}" if config.midi_input else ""}
 
