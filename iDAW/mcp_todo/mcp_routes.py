@@ -1,5 +1,5 @@
-from mcp_roadmap import RoadmapScanner
-from mcp_task_manager import TaskManager
+from .roadmap import RoadmapScanner
+from .mcp_taskmanager import TaskManager
 
 def get_tasks():
     tm = TaskManager()
