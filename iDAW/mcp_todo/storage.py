@@ -51,6 +51,23 @@ class TodoStorage:
             return self.storage_dir / f"todos_{project}.json"
         return self.default_file
 
+    def _get_all_project_files(self) -> List[Path]:
+        """Get all project files in the storage directory."""
+        files = [self.default_file] if self.default_file.exists() else []
+        for path in self.storage_dir.glob("todos_*.json"):
+            if path.suffix == ".json" and not path.name.endswith(".bak"):
+                files.append(path)
+        return files
+
+    def _extract_project_from_path(self, path: Path) -> Optional[str]:
+        """Extract project name from file path."""
+        if path == self.default_file:
+            return None  # Default project
+        name = path.stem  # e.g., "todos_myproject"
+        if name.startswith("todos_"):
+            return name[6:]  # Remove "todos_" prefix
+        return None
+
     def _load_data(self, project: Optional[str] = None) -> Dict[str, Any]:
         """Load data with file locking."""
         file_path = self._get_file_path(project)
@@ -238,7 +255,7 @@ class TodoStorage:
         List TODOs with optional filters.
 
         Args:
-            project: Filter by project
+            project: Filter by project (None = all projects)
             status: Filter by status (pending/in_progress/completed/blocked/cancelled)
             priority: Filter by priority (low/medium/high/urgent)
             tags: Filter by tags (any match)
@@ -247,15 +264,26 @@ class TodoStorage:
         Returns:
             List of matching Todo objects
         """
-        data = self._load_data(project)
-
         all_todos = []
-        if "lists" in data:
-            for list_name, list_data in data["lists"].items():
-                if project and list_name != project:
-                    continue
-                for todo_data in list_data.get("todos", []):
-                    all_todos.append(Todo.from_dict(todo_data))
+
+        if project is not None:
+            # Load only the specified project
+            data = self._load_data(project)
+            if "lists" in data:
+                for list_name, list_data in data["lists"].items():
+                    if list_name != project and project != "default":
+                        continue
+                    for todo_data in list_data.get("todos", []):
+                        all_todos.append(Todo.from_dict(todo_data))
+        else:
+            # Load from all project files
+            for file_path in self._get_all_project_files():
+                proj = self._extract_project_from_path(file_path)
+                data = self._load_data(proj)
+                if "lists" in data:
+                    for list_name, list_data in data["lists"].items():
+                        for todo_data in list_data.get("todos", []):
+                            all_todos.append(Todo.from_dict(todo_data))
 
         # Apply filters
         result = []
