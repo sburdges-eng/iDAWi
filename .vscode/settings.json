@@ -298,5 +298,11 @@
   "redhat.telemetry.enabled": false,
   "security.promptForLocalFileProtocolHandling": false,
   "sourcery.python.version": "3.9",
-  "sourcery.refactor.max_line_length": 100
+  "sourcery.refactor.max_line_length": 100,
+  "github.copilot.advanced": {
+    "inlineSuggestCount": 3,
+    "listCount": 10
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.editor.enableCodeActions": true
 }

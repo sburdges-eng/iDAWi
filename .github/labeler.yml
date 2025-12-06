@@ -1,0 +1,57 @@
+# Auto-labeling configuration for iDAW
+# Labels are applied based on file paths in PRs
+
+cpp:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'penta-core/**/*.cpp'
+          - 'penta-core/**/*.h'
+
+python:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'DAiW-Music-Brain/**/*.py'
+
+typescript:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'iDAW/**/*.ts'
+          - 'iDAW/**/*.tsx'
+
+audio-engine:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'penta-core/src/groove/**'
+          - 'penta-core/src/harmony/**'
+          - 'penta-core/src/midi/**'
+          - 'penta-core/src/transport/**'
+          - 'penta-core/include/penta/groove/**'
+          - 'penta-core/include/penta/harmony/**'
+          - 'penta-core/include/penta/midi/**'
+          - 'penta-core/include/penta/transport/**'
+
+emotion:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'DAiW-Music-Brain/music_brain/emotion/**'
+          - 'iDAW/src/emotion/**'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+          - 'docs/**'
+
+workflow:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.json'
+          - '**/*.yaml'
+          - '**/*.yml'
+          - '**/*.toml'
+          - '.vscode/**'
