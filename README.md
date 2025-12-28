@@ -7,6 +7,7 @@ Unified repository integrating iDAW, DAiW-Music-Brain, and penta-core projects.
 - **iDAW/** - Main iDAW project (Python, guides, templates, music-brain integration)
 - **DAiW-Music-Brain/** - Music AI brain with emotion processing, plugins, and MIDI examples
 - **penta-core/** - C++ real-time audio engine with harmony/groove analysis
+- **scripts/** - Automation scripts for repository management
 
 ## Components
 
@@ -28,3 +29,30 @@ Unified repository integrating iDAW, DAiW-Music-Brain, and penta-core projects.
 - OSC communication layer
 - Python bindings
 - VST/AU plugin architecture
+
+## Repository Management
+
+### PR Auto-Merge
+
+The repository includes automated PR management scripts that can:
+- Automatically merge PRs without conflicts
+- Create conflict branches for PRs with merge conflicts
+- Delete successfully merged branches
+- Preserve conflict state for human review
+
+See [scripts/README.md](scripts/README.md) for details.
+
+**Manual Usage:**
+```bash
+# Process all open PRs
+python scripts/manage_prs.py
+
+# Process specific branches
+python scripts/manage_prs.py --branches feature/xyz
+
+# Exclude current branch
+python scripts/manage_prs.py --exclude-current
+```
+
+**Automated Usage:**
+The workflow can be triggered manually from GitHub Actions → "PR Auto-Merge"

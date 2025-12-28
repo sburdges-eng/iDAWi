@@ -35,3 +35,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.log
+
+# PR management
+MERGE_CONFLICTS.json
