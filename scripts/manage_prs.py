@@ -60,17 +60,17 @@ def get_default_repo_info():
         
         # Parse GitHub URL (supports both HTTPS and SSH formats)
         # https://github.com/owner/repo.git or git@github.com:owner/repo.git
-        if "github.com" in url:
-            # Remove .git suffix if present
+        # More secure check: verify github.com is in the expected position
+        if url.startswith("https://github.com/") or url.startswith("http://github.com/"):
+            # HTTPS format: https://github.com/owner/repo
             url = url.rstrip(".git")
-            
-            if url.startswith("git@"):
-                # SSH format: git@github.com:owner/repo
-                parts = url.split(":")[-1].split("/")
-            else:
-                # HTTPS format: https://github.com/owner/repo
-                parts = url.split("github.com/")[-1].split("/")
-            
+            parts = url.split("github.com/", 1)[-1].split("/")
+            if len(parts) >= 2:
+                return parts[0], parts[1]
+        elif url.startswith("git@github.com:"):
+            # SSH format: git@github.com:owner/repo
+            url = url.rstrip(".git")
+            parts = url.split(":", 1)[-1].split("/")
             if len(parts) >= 2:
                 return parts[0], parts[1]
     except subprocess.CalledProcessError:
