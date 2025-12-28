@@ -1,0 +1,70 @@
+name: PR Auto-Merge
+
+on:
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      exclude_current:
+        description: 'Exclude current branch'
+        required: false
+        default: 'true'
+        type: boolean
+  
+  # Optional: Schedule to run daily
+  # schedule:
+  #   - cron: '0 0 * * *'  # Daily at midnight UTC
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      
+      - name: Install GitHub CLI
+        run: |
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+      
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+      
+      - name: Run PR Manager
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event.inputs.exclude_current }}" = "true" ]; then
+            python scripts/manage_prs.py --exclude-current
+          else
+            python scripts/manage_prs.py
+          fi
+      
+      - name: Show Summary
+        if: always()
+        run: |
+          echo "## PR Auto-Merge Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Workflow completed. Check the logs above for details on:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Successfully merged PRs" >> $GITHUB_STEP_SUMMARY
+          echo "- ⚠️ PRs moved to conflict branches" >> $GITHUB_STEP_SUMMARY
