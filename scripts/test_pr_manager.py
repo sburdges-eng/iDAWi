@@ -13,7 +13,7 @@ import subprocess
 from pathlib import Path
 
 # Add scripts directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+sys.path.insert(0, str(Path(__file__).parent))
 from pr_manager import PRManager
 
 
@@ -55,8 +55,8 @@ def test_dry_run():
     """Test dry run functionality."""
     print("Testing dry run functionality...")
     
-    # Create test script in temp directory
-    test_script = Path(__file__).parent.parent / "scripts" / "pr_manager.py"
+    # Create test script reference
+    test_script = Path(__file__).parent / "pr_manager.py"
     assert test_script.exists(), "pr_manager.py not found"
     
     # Run with dry-run flag
@@ -77,8 +77,8 @@ def test_help_output():
     print("Testing help output...")
     
     scripts = [
-        Path(__file__).parent.parent / "scripts" / "pr_manager.py",
-        Path(__file__).parent.parent / "scripts" / "manage_prs.py"
+        Path(__file__).parent / "pr_manager.py",
+        Path(__file__).parent / "manage_prs.py"
     ]
     
     for script in scripts:

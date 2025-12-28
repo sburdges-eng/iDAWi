@@ -161,7 +161,11 @@ class PRManager:
             conflicting_files = []
             
             for line in status_result.stdout.strip().split("\n"):
-                if line.startswith("UU") or line.startswith("AA") or line.startswith("DD"):
+                # Check for all types of unmerged file status codes
+                # UU = both modified, AA = both added, DD = both deleted
+                # AU = added by us, UA = added by them
+                # DU = deleted by us, UD = deleted by them
+                if line.startswith(("UU", "AA", "DD", "AU", "UA", "DU", "UD")):
                     # Unmerged files
                     conflicting_files.append(line[3:].strip())
             

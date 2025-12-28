@@ -43,22 +43,61 @@ def get_github_prs(owner: str, repo: str):
         return []
 
 
+def get_default_repo_info():
+    """Get default repository owner and name from git remote.
+    
+    Returns:
+        Tuple of (owner, repo) or (None, None) if not found
+    """
+    try:
+        result = subprocess.run(
+            ["git", "config", "--get", "remote.origin.url"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        url = result.stdout.strip()
+        
+        # Parse GitHub URL (supports both HTTPS and SSH formats)
+        # https://github.com/owner/repo.git or git@github.com:owner/repo.git
+        if "github.com" in url:
+            # Remove .git suffix if present
+            url = url.rstrip(".git")
+            
+            if url.startswith("git@"):
+                # SSH format: git@github.com:owner/repo
+                parts = url.split(":")[-1].split("/")
+            else:
+                # HTTPS format: https://github.com/owner/repo
+                parts = url.split("github.com/")[-1].split("/")
+            
+            if len(parts) >= 2:
+                return parts[0], parts[1]
+    except subprocess.CalledProcessError:
+        pass
+    
+    return None, None
+
+
 def main():
     """Main entry point."""
     import argparse
+    
+    # Get default repo info from git remote
+    default_owner, default_repo = get_default_repo_info()
     
     parser = argparse.ArgumentParser(
         description="Manage open PRs - merge or create conflict branches"
     )
     parser.add_argument(
         "--owner",
-        default="sburdges-eng",
-        help="GitHub repository owner"
+        default=default_owner or "sburdges-eng",
+        help=f"GitHub repository owner (default: {default_owner or 'sburdges-eng'})"
     )
     parser.add_argument(
         "--repo",
-        default="iDAWi",
-        help="GitHub repository name"
+        default=default_repo or "iDAWi",
+        help=f"GitHub repository name (default: {default_repo or 'iDAWi'})"
     )
     parser.add_argument(
         "--branches",
